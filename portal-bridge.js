@@ -48,6 +48,8 @@
         return origFetch('/api?module=dbr', Object.assign({}, init, { redirect: 'follow' }));
       }
     }
+    return origFetch(input, init);
+  };
 
   // 2. Sembunyikan elemen ganda (Login, Sidebar/Header lama, Chat lama) + enforce tombol sesuai hak akses
   const cssRules = [
