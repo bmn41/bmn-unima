@@ -1382,6 +1382,7 @@ function resetActivityTimer() {
 }
 
 function checkSessionTimeout() {
+  if (window.self !== window.top) return; // Nonaktifkan auto-logout mandiri jika di dalam Portal
   if (localStorage.getItem("currentUser")) {
     const lastActive = localStorage.getItem("lastActivity");
     if (lastActive && (Date.now() - parseInt(lastActive, 10) > SESSION_TIMEOUT)) {
