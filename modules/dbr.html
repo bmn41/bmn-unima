@@ -1374,13 +1374,22 @@
     }
 
     function refreshAllData() {
-      if (!currentUser) return;
-      showLoading('Memuat data...');
-      google.script.run
-        .withSuccessHandler(function(data) { hideLoading(); applyServerData(data); })
-        .withFailureHandler(function() { hideLoading(); })
-        .getAppData(currentUser.username);
-    }
+   if (!currentUser) return;
+   showLoading('Memuat data...');
+   google.script.run
+     .withSuccessHandler(function(data) { hideLoading(); applyServerData(data, true); })
+     .withFailureHandler(function(err) {
+       hideLoading();
+       Swal.fire({
+         icon: 'error',
+         title: 'Gagal Memuat Data DBR',
+         text: (err && err.message) ? err.message : 'Koneksi ke server DBR gagal.',
+         background: '#0f172a',
+         color: '#f8fafc'
+       });
+     })
+     .getAppData(currentUser.username);
+ }
 
     function parseTimestampMs(dateStr) {
       if (!dateStr) return 0;
@@ -1409,7 +1418,9 @@
         users: data.users !== undefined ? data.users : (appState.users || []),
         logs: data.logs !== undefined ? data.logs : (appState.logs || [])
       };
-      try { localStorage.setItem(DATA_CACHE_KEY, JSON.stringify(appState)); } catch (e) {}
+      if (isFromServer) {
+     try { localStorage.setItem(DATA_CACHE_KEY, JSON.stringify(appState)); } catch (e) {}
+   }
 
       document.getElementById('statTotalGedung').textContent = appState.gedung.length;
       document.getElementById('statTotalLantai').textContent = appState.lantai.length;
