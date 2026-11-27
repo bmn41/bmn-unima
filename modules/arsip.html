@@ -909,6 +909,7 @@ select option {
 .perm-mini-link:hover { text-decoration: underline; }
 </style>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="/portal-bridge.js"></script>
 </head>
 <body class="theme-default">
   <audio id="notifSound" src="https://raw.githubusercontent.com/StenlyLosu/External-Files/main/whatsapp_notification.mp3" preload="auto"></audio>
@@ -4081,6 +4082,6 @@ function initChatSystem() {
     if(chatInterval) clearInterval(chatInterval);
     chatInterval = setInterval(fetchChatUpdates, 8000); 
 }
-<script src="/portal-bridge.js"></script>
+<script>
 </body>
 </html>
