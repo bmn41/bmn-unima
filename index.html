@@ -627,7 +627,7 @@
     // =========================================================================
     // 1. KONFIGURASI MENU, SUBMENU, ROUTE URL, & JUDUL TAB
     // =========================================================================
-    const CORE_API = '/api?module=core';
+    const CORE_API = 'https://script.google.com/macros/s/AKfycbzsCExtMK78a5k2yUQ1ZhJxMDzb5vgpQ7xFO6rqO7QfN1WwDEl81VpyX6kES_ss7y-3/exec';
     const SESSION_KEY = 'BMN_UNIMA_SESSION_V1';
     const IDLE_LIMIT_MS = 20 * 60 * 1000; // 20 Menit
 
@@ -760,6 +760,7 @@
     async function callCore(action, ...args) {
       const res = await fetch(CORE_API, {
         method: 'POST',
+        redirect: 'follow',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({ action, args })
       });
@@ -768,10 +769,7 @@
       try {
         json = JSON.parse(text);
       } catch (e) {
-        if (text.includes('<!DOCTYPE html>') || text.includes('<html')) {
-          throw new Error('Proxy /api belum aktif. Pastikan file berada di folder "functions/api.js" (huruf kecil) dan dibuka melalui domain Cloudflare Pages (*.pages.dev).');
-        }
-        throw new Error('Respons server tidak valid (HTTP ' + res.status + '): ' + text.slice(0, 120));
+        throw new Error('Respons server tidak valid (HTTP ' + res.status + '). Pastikan Code.gs sudah di-Deploy ulang sebagai Web App (Who has access: Anyone).');
       }
       if (!json.ok) throw new Error(json.error || 'Terjadi kesalahan pada server.');
       return json.data;
