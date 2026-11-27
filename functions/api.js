@@ -2,7 +2,7 @@ const ENDPOINTS = {
   core:   'https://script.google.com/macros/s/AKfycbzsCExtMK78a5k2yUQ1ZhJxMDzb5vgpQ7xFO6rqO7QfN1WwDEl81VpyX6kES_ss7y-3/exec',
   bast:   'https://script.google.com/macros/s/AKfycbywfvfpdkeskEOPgmULA0F_MFfqfSDFOqN9C3S8Z5_h63OqiBIAR7zAUKpS8hLiF00O/exec',
   arsip:  'https://script.google.com/macros/s/AKfycbxmTTF_X2QrMTcqxjWGgUqW6_yIqx5moTa0VR-yA7kMn6JK--Nm8MHtMcfUFYN_d1m5sg/exec',
-  dbr:    'https://script.google.com/macros/s/AKfycby1rYAYdGArzQmWh__Fu57dKIeBeypgqlcrMQhovUToWg44jAZKvMCYuCWOMMypXbmv/exec',
+  dbr:    'https://script.google.com/macros/s/AKfycbwGvVsRCuw318mSQcOdD5OrKUMaamxP6aIIIgaLjPt4vvhhrRjXKYWIpkbTrplN2O86/exec',
   calbmn: 'https://script.google.com/macros/s/AKfycby97bDb14KPzd_cvY_7FNeyKuce1IMbARqSGvzZTX3EcUds2lgPQ6xzYASVVmBq9K44UQ/exec'
 };
 
