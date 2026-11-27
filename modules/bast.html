@@ -2151,7 +2151,12 @@ function renderAdminThreadList(threads) {
 
   // --- LOGIKA AUTO LOGOUT ---
   let idleTimer;
-  function startIdleTimer() { if (idleTimer) clearTimeout(idleTimer); idleTimer = setTimeout(forceAutoLogout, 10 * 60 * 1000); }
+  // UBAH BARIS INI:
+  function startIdleTimer() {
+    if (window.self !== window.top) return; // Nonaktifkan auto-logout mandiri jika di dalam Portal
+    if (idleTimer) clearTimeout(idleTimer);
+    idleTimer = setTimeout(forceAutoLogout, 10 * 60 * 1000);
+  }
   function resetIdleTimer() { if (userSession) startIdleTimer(); }
   function forceAutoLogout() {
     if (!userSession) return;
