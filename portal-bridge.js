@@ -25,25 +25,25 @@
   const hasAction = (a) => isSuper || actions.indexOf(a) !== -1;
 
   // 1. Intercept fetch agar semua panggilan ke script.google.com lewat proxy Cloudflare /api?module=...
+  // 1. Arahkan /api milik BAST ke URL exec aslinya; modul lain tetap ke exec masing-masing
+  const BAST_EXEC = 'https://script.google.com/macros/s/AKfycbywfvfpdkeskEOPgmULA0F_MFfqfSDFOqN9C3S8Z5_h63OqiBIAR7zAUKpS8hLiF00O/exec';
   const origFetch = window.fetch.bind(window);
   window.fetch = function (input, init) {
     let urlStr = typeof input === 'string' ? input : (input && input.url ? input.url : '');
-    if (urlStr && (urlStr.includes('script.google.com/macros/') || urlStr === '/api')) {
-      const targetUrl = '/api?module=' + encodeURIComponent(MODULE);
-      // Untuk DBR: jika user baru belum terdaftar di tabel Users DBR, otomatis fallback memakai 'admin' pada argumen username
-      if (MODULE === 'dbr' && init && typeof init.body === 'string') {
-        try {
-          const parsedBody = JSON.parse(init.body);
-          if (Array.isArray(parsedBody.args) && parsedBody.args.length > 0) {
-            const lastIdx = parsedBody.args.length - 1;
-            if (typeof parsedBody.args[lastIdx] === 'string' && parsedBody.args[lastIdx].toLowerCase() === portalUser.username.toLowerCase()) {
-              parsedBody.args[lastIdx] = 'admin';
-              init = Object.assign({}, init, { body: JSON.stringify(parsedBody) });
-            }
+    if (MODULE === 'bast' && urlStr === '/api') {
+      return origFetch(BAST_EXEC, Object.assign({}, init, { redirect: 'follow' }));
+    }
+    if (MODULE === 'dbr' && urlStr.includes('script.google.com/macros/') && init && typeof init.body === 'string') {
+      try {
+        const parsedBody = JSON.parse(init.body);
+        if (Array.isArray(parsedBody.args) && parsedBody.args.length > 0) {
+          const lastIdx = parsedBody.args.length - 1;
+          if (typeof parsedBody.args[lastIdx] === 'string' && parsedBody.args[lastIdx].toLowerCase() === portalUser.username.toLowerCase()) {
+            parsedBody.args[lastIdx] = 'admin';
+            init = Object.assign({}, init, { body: JSON.stringify(parsedBody) });
           }
-        } catch (e) {}
-      }
-      return origFetch(targetUrl, init);
+        }
+      } catch (e) {}
     }
     return origFetch(input, init);
   };
