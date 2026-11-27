@@ -194,105 +194,52 @@
   <!-- ====================================================================== -->
   <!-- HALAMAN LOGIN (KELAS KEMENTERIAN)                                      -->
   <!-- ====================================================================== -->
+  <!-- ====================================================================== -->
+  <!-- HALAMAN LOGIN (BERSIH & ELEGAN)                                        -->
+  <!-- ====================================================================== -->
   <section id="loginView" class="min-h-screen ministry-gradient flex items-center justify-center p-4">
-    <div class="w-full max-w-5xl grid md:grid-cols-12 rounded-3xl overflow-hidden shadow-2xl border border-white/15 bg-white">
-      <!-- Panel Kiri -->
-      <div class="md:col-span-6 ministry-gradient text-white p-8 sm:p-10 flex flex-col justify-between relative">
+    <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-white/15 p-8 sm:p-10">
+      <div class="text-center mb-8">
+        <div class="w-20 h-20 mx-auto rounded-2xl bg-slate-50 p-2.5 border border-slate-200 shadow-sm flex items-center justify-center mb-4">
+          <img
+            src="https://drive.google.com/thumbnail?id=1LktwTo_ZiFkTNFUbR_aPpUk3-CKJZEgD&sz=w256"
+            onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Logo-Unima-2023.png/500px-Logo-Unima-2023.png'"
+            alt="Logo UNIMA"
+            class="w-full h-full object-contain"
+          />
+        </div>
+        <h1 class="text-2xl font-extrabold tracking-tight text-slate-900">BMN UNIMA</h1>
+        <p class="text-xs font-medium text-slate-500 mt-1">Universitas Negeri Manado</p>
+      </div>
+
+      <form onsubmit="handleLogin(event)" class="space-y-4">
         <div>
-          <div class="flex items-center gap-4 mb-8">
-            <div class="w-16 h-16 rounded-2xl bg-white p-2 shadow-xl border-2 border-amber-400/70 shrink-0">
-              <img
-                src="https://drive.google.com/thumbnail?id=1LktwTo_ZiFkTNFUbR_aPpUk3-CKJZEgD&sz=w256"
-                onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Logo-Unima-2023.png/500px-Logo-Unima-2023.png'"
-                alt="UNIMA"
-                class="w-full h-full object-contain"
-              />
-            </div>
-            <div>
-              <span class="inline-block px-3 py-0.5 rounded-full text-[10px] font-extrabold tracking-widest uppercase bg-amber-400/20 text-amber-300 border border-amber-400/40">
-                KEMENDIKTISAINTEK RI
-              </span>
-              <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1">BMN UNIMA</h1>
-              <p class="text-xs text-slate-300">Sub Bagian Perlengkapan • Universitas Negeri Manado</p>
-            </div>
-          </div>
-
-          <p class="text-sm text-slate-200 leading-relaxed mb-6">
-            Portal Terpadu Pengelolaan Barang Milik Negara yang mengintegrasikan seluruh layanan administrasi aset dalam satu pintu aman dan cepat.
-          </p>
-
-          <div class="grid grid-cols-2 gap-3 text-xs">
-            <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10">
-              <i class="bi bi-file-earmark-check-fill text-amber-400 text-lg"></i>
-              <p class="font-bold mt-1.5">BAST BMN</p>
-              <p class="text-[11px] text-slate-400">Serah terima, memo & kendaraan</p>
-            </div>
-            <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10">
-              <i class="bi bi-archive-fill text-sky-400 text-lg"></i>
-              <p class="font-bold mt-1.5">Arsip Dokumen</p>
-              <p class="text-[11px] text-slate-400">Aset, persediaan & surat</p>
-            </div>
-            <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10">
-              <i class="bi bi-building-fill-check text-emerald-400 text-lg"></i>
-              <p class="font-bold mt-1.5">DBR BMN</p>
-              <p class="text-[11px] text-slate-400">Daftar barang ruangan & mutasi</p>
-            </div>
-            <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10">
-              <i class="bi bi-journal-bookmark-fill text-purple-400 text-lg"></i>
-              <p class="font-bold mt-1.5">CaLBMN</p>
-              <p class="text-[11px] text-slate-400">Catatan laporan & rekonsiliasi</p>
-            </div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Username</label>
+          <div class="relative">
+            <i class="bi bi-person-fill absolute left-3.5 top-3 text-slate-400"></i>
+            <input type="text" id="loginUser" required autocomplete="username" placeholder="Masukkan username"
+              class="w-full pl-10 pr-4 py-3 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-900 focus:border-blue-900 focus:outline-none transition" />
           </div>
         </div>
 
-        <div class="mt-8 pt-4 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-400">
-          <span><i class="bi bi-shield-lock-fill text-amber-400 mr-1"></i>Enkripsi SHA-256</span>
-          <span>Auto-Logout 20 Menit</span>
-        </div>
-      </div>
-
-      <!-- Panel Kanan: Form Login -->
-      <div class="md:col-span-6 p-8 sm:p-10 flex flex-col justify-center bg-white">
-        <div class="mb-7">
-          <span class="text-[11px] font-extrabold uppercase tracking-widest text-amber-600">Single Sign-On Portal</span>
-          <h2 class="text-2xl font-extrabold text-slate-900 mt-1">Masuk ke BMN UNIMA</h2>
-          <p class="text-xs text-slate-500 mt-1">Satu kali login untuk mengakses seluruh menu sesuai kewenangan akun Anda.</p>
-        </div>
-
-        <form onsubmit="handleLogin(event)" class="space-y-4">
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Username</label>
-            <div class="relative">
-              <i class="bi bi-person-fill absolute left-3.5 top-3 text-slate-400"></i>
-              <input type="text" id="loginUser" required autocomplete="username" placeholder="Masukkan username"
-                class="w-full pl-10 pr-4 py-3 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-900 focus:border-blue-900 focus:outline-none" />
-            </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Password</label>
+          <div class="relative">
+            <i class="bi bi-lock-fill absolute left-3.5 top-3 text-slate-400"></i>
+            <input type="password" id="loginPass" required autocomplete="current-password" placeholder="Masukkan password"
+              class="w-full pl-10 pr-11 py-3 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-900 focus:border-blue-900 focus:outline-none transition" />
+            <button type="button" onclick="togglePassVisibility()" class="absolute right-3.5 top-3 text-slate-400 hover:text-slate-700">
+              <i id="passEyeIcon" class="bi bi-eye-fill"></i>
+            </button>
           </div>
-
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Password</label>
-            <div class="relative">
-              <i class="bi bi-key-fill absolute left-3.5 top-3 text-slate-400"></i>
-              <input type="password" id="loginPass" required autocomplete="current-password" placeholder="Masukkan password"
-                class="w-full pl-10 pr-11 py-3 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-900 focus:border-blue-900 focus:outline-none" />
-              <button type="button" onclick="togglePassVisibility()" class="absolute right-3.5 top-3 text-slate-400 hover:text-slate-700">
-                <i id="passEyeIcon" class="bi bi-eye-fill"></i>
-              </button>
-            </div>
-          </div>
-
-          <button type="submit"
-            class="w-full py-3.5 rounded-xl ministry-gradient text-white font-extrabold text-sm shadow-lg hover:opacity-95 transition flex items-center justify-center gap-2 mt-2">
-            <span>MASUK KE PORTAL</span>
-            <i class="bi bi-arrow-right-circle-fill text-amber-400"></i>
-          </button>
-        </form>
-
-        <div class="mt-6 p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-600 flex items-start gap-2.5">
-          <i class="bi bi-info-circle-fill text-blue-900 text-sm mt-0.5"></i>
-          <span>Sesi login akan otomatis berakhir apabila tidak ada aktivitas selama <b>20 menit</b> demi menjaga keamanan data negara.</span>
         </div>
-      </div>
+
+        <button type="submit"
+          class="w-full py-3.5 rounded-xl ministry-gradient text-white font-bold text-sm shadow-lg hover:opacity-95 transition flex items-center justify-center gap-2 mt-2">
+          <span>Masuk</span>
+          <i class="bi bi-arrow-right text-amber-400"></i>
+        </button>
+      </form>
     </div>
   </section>
 
@@ -818,7 +765,14 @@
       });
       const text = await res.text();
       let json;
-      try { json = JSON.parse(text); } catch (e) { throw new Error('Respons server tidak valid. Pastikan Apps Script sudah di-deploy.'); }
+      try {
+        json = JSON.parse(text);
+      } catch (e) {
+        if (text.includes('<!DOCTYPE html>') || text.includes('<html')) {
+          throw new Error('Proxy /api belum aktif. Pastikan file berada di folder "functions/api.js" (huruf kecil) dan dibuka melalui domain Cloudflare Pages (*.pages.dev).');
+        }
+        throw new Error('Respons server tidak valid (HTTP ' + res.status + '): ' + text.slice(0, 120));
+      }
       if (!json.ok) throw new Error(json.error || 'Terjadi kesalahan pada server.');
       return json.data;
     }
