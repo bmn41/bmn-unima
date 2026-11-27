@@ -1,1 +1,2404 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Login | BAST BMN UNIMA</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Logo-Unima-2023.png/500px-Logo-Unima-2023.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+  <style>
+    :root { 
+      --primary-blue: #0a2540; 
+      --primary-blue-light: #163b63;
+      --accent-gold: #e2b842; 
+      --bg-surface: #f1f5f9;
+      --robot-cyan: #38bdf8;
+    }
 
+    body { 
+      background-color: var(--bg-surface); 
+      font-family: 'Plus Jakarta Sans', sans-serif; 
+      color: #1e293b;
+      overflow-x: hidden;
+    }
+
+    /* LOGIN PAGE MODERN */
+    #login-page {
+      min-height: 100vh;
+      width: 100%;
+      margin-top: 0 !important;
+      padding: 20px !important;
+      max-width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top right, #1e3a8a 0%, #0a2540 55%, #061526 100%);
+    }
+    #login-page .row {
+      width: 100%;
+      max-width: 1140px;
+      margin: 0 auto;
+    }
+    #login-page .card {
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(12px);
+      border-radius: 22px !important;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45) !important;
+      border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    }
+    #login-page .btn-primary {
+      background: linear-gradient(135deg, #0a2540, #1d4ed8) !important;
+      border: none;
+      border-radius: 12px;
+      letter-spacing: 0.5px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    #login-page .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(29, 78, 216, 0.35);
+    }
+
+    /* SIDEBAR ELEGAN */
+    .sidebar { 
+      background: linear-gradient(180deg, #0a2540 0%, #0f172a 100%); 
+      min-height: 100vh; 
+      color: white; 
+      transition: all 0.3s ease;
+      box-shadow: 4px 0 24px rgba(15, 23, 42, 0.12);
+    }
+    .sidebar .nav {
+      padding: 10px 12px;
+      gap: 4px;
+    }
+    .nav-link { 
+      color: rgba(226, 232, 240, 0.8); 
+      cursor: pointer; 
+      border-bottom: none;
+      border-radius: 10px;
+      padding: 11px 16px; 
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      transition: all 0.2s ease;
+    }
+    .nav-link:hover { 
+      color: #ffffff; 
+      background: rgba(255, 255, 255, 0.09); 
+      transform: translateX(3px);
+    }
+    .nav-link.active { 
+      color: #0a2540 !important; 
+      background: linear-gradient(90deg, var(--accent-gold), #f3d478); 
+      font-weight: 700;
+      border-left: none;
+      box-shadow: 0 4px 12px rgba(226, 184, 66, 0.3);
+    }
+
+    /* CARDS & FORM MODERN */
+    .card {
+      border-radius: 16px;
+      border: 1px solid rgba(226, 232, 240, 0.85);
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+    }
+    .form-control, .form-select {
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      padding: 0.55rem 0.85rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+    .btn {
+      border-radius: 10px;
+      font-weight: 600;
+    }
+    .item-card { 
+      border-left: 5px solid var(--primary-blue); 
+      border-radius: 14px;
+      transition: transform 0.2s, box-shadow 0.2s; 
+    }
+    .item-card:hover { 
+      transform: translateY(-2px); 
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08); 
+    }
+
+    /* LOADING OVERLAY */
+    .loading-overlay { 
+      position: fixed; top:0; left:0; width:100%; height:100%; 
+      background: rgba(15, 23, 42, 0.45); 
+      z-index: 99999; display: none; flex-direction: column; 
+      align-items: center; justify-content: center; 
+      backdrop-filter: blur(5px); 
+    }
+    .loading-overlay h5 {
+      color: #ffffff !important;
+      background: rgba(10, 37, 64, 0.85);
+      padding: 8px 20px;
+      border-radius: 999px;
+      font-size: 0.95rem;
+    }
+
+    /* AUTOCOMPLETE */
+    .autocomplete-box { 
+      position: absolute; top: 100%; left: 0; right: 0; 
+      background: white; z-index: 1050; border: 1px solid #e2e8f0; 
+      max-height: 210px; overflow-y: auto; 
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12); 
+      border-radius: 0 0 12px 12px; 
+    }
+    .autocomplete-item { padding: 10px 14px; cursor: pointer; border-bottom: 1px solid #f1f5f9; transition: background 0.15s; }
+    .autocomplete-item:hover { background-color: #eff6ff; color: var(--primary-blue); }
+
+    /* JAM DIGITAL FUTURISTIK */
+    .widget-robot {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 16px;
+      padding: 22px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.2);
+      border-left: 4px solid var(--robot-cyan);
+    }
+    .robot-time { 
+      font-family: 'JetBrains Mono', monospace; 
+      font-size: 2.5rem; font-weight: 800; 
+      color: var(--robot-cyan); 
+      text-shadow: 0 0 18px rgba(56, 189, 248, 0.55); 
+      letter-spacing: 2px; line-height: 1.1; 
+    }
+    .robot-date { 
+      font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1.5px; 
+      color: #cbd5e1; margin-top: 10px; 
+      border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px; 
+    }
+    .robot-label { 
+      position: absolute; top: 8px; right: 12px; 
+      font-size: 0.65rem; color: #64748b; 
+      font-family: 'JetBrains Mono', monospace; letter-spacing: 1px; 
+    }
+
+    /* TABLE & FILTER */
+    .table-responsive { font-size: 0.85rem; border-radius: 12px; }
+    .table thead th { background-color: #f8fafc; color: #334155; font-weight: 700; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.3px; }
+    .filter-input { width: 100%; padding: 5px 8px; font-size: 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; margin-top: 4px; }
+    .pagination-container { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+    #dataTable tbody td { vertical-align: top !important; }
+
+    /* CHAT WIDGET */
+    .chat-fab { position: fixed; bottom: 24px; right: 24px; width: 58px; height: 58px; background: linear-gradient(135deg, #0a2540, #1d4ed8); color: white; border-radius: 50%; display: none; justify-content: center; align-items: center; font-size: 24px; box-shadow: 0 10px 25px rgba(10, 37, 64, 0.35); cursor: pointer; z-index: 9999; transition: transform 0.25s; }
+    .chat-fab:hover { transform: scale(1.08); }
+    #chat-badge-main { position: absolute; top: -4px; right: -4px; background: #ef4444; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; font-weight: bold; border: 2px solid white; display: none; min-width: 20px; text-align: center; }
+
+    .chat-widget { position: fixed; bottom: 24px; right: 24px; width: 360px; height: 500px; background: #fff; border-radius: 16px; box-shadow: 0 20px 45px rgba(15, 23, 42, 0.25); display: flex; flex-direction: column; z-index: 10000; transition: transform 0.25s cubic-bezier(0, 0.5, 0.5, 1), opacity 0.25s; transform: translateY(120%); opacity: 0; pointer-events: none; overflow: hidden; border: 1px solid #e2e8f0; }
+    .chat-widget.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+    .chat-header { background: var(--primary-blue); color: white; padding: 12px 16px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; z-index: 2; height: 54px; border-bottom: 3px solid var(--accent-gold); }
+    .chat-header-title { display: flex; align-items: center; gap: 10px; }
+    .chat-view { display: flex; flex-direction: column; height: calc(100% - 54px); width: 100%; position: absolute; top: 54px; left: 0; background: white; transition: transform 0.3s; overflow: hidden; }
+    .chat-view.hidden { transform: translateX(100%); }
+    .contact-list { overflow-y: auto; height: 100%; background: #f8fafc; }
+    .contact-item { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; cursor: pointer; display: flex; align-items: center; gap: 12px; background: white; transition: background 0.15s; }
+    .contact-item:hover { background: #eff6ff; }
+    .contact-name { font-weight: 700; font-size: 0.9rem; color: var(--primary-blue); }
+    .contact-badge { background: #ef4444; color: white; border-radius: 10px; padding: 2px 8px; font-size: 11px; font-weight: bold; margin-left: auto; }
+
+    .chat-room-body { height: calc(100% - 60px); overflow-y: auto; padding: 18px 14px; background: #f1f5f9; font-size: 0.85rem; display: flex; flex-direction: column; }
+    .chat-footer { height: 60px; padding: 10px; border-top: 1px solid #e2e8f0; background: #fff; display: flex; gap: 8px; align-items: center; position: absolute; bottom: 0; width: 100%; }
+    .chat-bubble { margin-bottom: 12px; padding: 10px 14px; border-radius: 12px; max-width: 88%; position: relative; line-height: 1.4; word-wrap: break-word; border: 1px solid #e2e8f0; background: #fff; }
+    .chat-bubble.me { background: #eff6ff; color: var(--primary-blue); align-self: flex-end; border-left: 4px solid var(--primary-blue); }
+    .chat-bubble.other { background: #ffffff; color: #334155; align-self: flex-start; border-left: 4px solid var(--accent-gold); }
+    .chat-meta { font-size: 0.65rem; color: #64748b; margin-top: 6px; display: flex; justify-content: flex-end; align-items: center; gap: 5px; font-weight: 500; }
+    .deleted-bubble { background: #f1f5f9 !important; color: #94a3b8 !important; font-style: italic; border: 1px dashed #cbd5e1; border-left: 4px solid #cbd5e1 !important; }
+    .emoji-btn { background: none; border: none; font-size: 1.25rem; color: #64748b; cursor: pointer; padding: 0 5px; }
+    .emoji-btn:hover { color: var(--primary-blue); }
+    #emoji-container { position: absolute; bottom: 65px; left: 10px; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); padding: 10px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; z-index: 10001; border: 1px solid #e2e8f0; }
+    .emoji-item { font-size: 1.3rem; cursor: pointer; text-align: center; border-radius: 6px; }
+    .emoji-item:hover { background: #eff6ff; }
+    .chat-actions { display: none; position: absolute; top: -18px; right: 0; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 4px 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 99999; gap: 12px; }
+    .chat-bubble.me:hover .chat-actions { display: flex; }
+    .chat-actions i { font-size: 0.95rem; cursor: pointer; color: #475569; }
+    .chat-actions i:hover { color: var(--primary-blue); }
+
+    @media (max-width: 768px) { 
+      .sidebar { min-height: auto; } 
+      .chat-widget { width: calc(100vw - 24px); right: 12px; bottom: 12px; }
+    }
+  </style>
+</head>
+<body>
+ 
+<div class="loading-overlay" id="loader">
+  <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
+  <h5 class="mt-3 fw-bold text-primary animate-pulse">Sedang Memproses...</h5>
+</div>
+ 
+<div id="login-page" class="container mt-5 pt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-5 col-lg-4">
+      <div class="card p-4 shadow-lg border-0" style="border-radius: 15px;">
+        <div class="text-center mb-4">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Logo-Unima-2023.png/500px-Logo-Unima-2023.png" width="80">
+          <h4 class="fw-bold mt-3" style="color: var(--primary-blue);">BAST BMN UNIMA</h4>
+          <p class="text-muted small">SILAHKAN LOGIN</p>
+        </div>
+        <div class="form-floating mb-3">
+          <input type="text" id="user" class="form-control" placeholder="Username">
+          <label>Username</label>
+        </div>
+        <div class="form-floating mb-4">
+          <input type="password" id="pass" class="form-control" placeholder="Password">
+          <label>Password</label>
+        </div>
+        <button onclick="handleLogin()" class="btn btn-primary w-100 py-2 fw-bold" style="background: var(--primary-blue);">LOGIN</button>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<div id="main-page" class="container-fluid d-none p-0">
+  <div class="row g-0">
+    <div class="col-md-3 col-lg-2 sidebar shadow">
+      <div class="p-4 text-center border-bottom border-secondary">
+        <h6 id="welcome-name" class="fw-bold text-uppercase m-0">USER NAME</h6>
+        <span id="role-tag" class="badge bg-warning text-dark mt-2" style="font-size: 0.7rem;">ROLE</span>
+      </div>
+      <nav class="nav flex-column mt-2">
+        <a class="nav-link" data-menu="dashboard" onclick="openMenu('dashboard')"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
+        <a class="nav-link" data-menu="BAST_Peralatan_Mesin" onclick="openMenu('BAST_Peralatan_Mesin')"><i class="bi bi-laptop me-2"></i> BAST BMN</a>
+        <a class="nav-link" data-menu="BAST_Kendaraan_Dinas" onclick="openMenu('BAST_Kendaraan_Dinas')"><i class="bi bi-car-front me-2"></i> BAST Kendaraan Dinas</a>
+        <a class="nav-link" data-menu="Memo_Perintah" onclick="openMenu('Memo_Perintah')"><i class="bi bi-envelope-paper me-2"></i> Memo Perintah</a>
+        <a class="nav-link" data-menu="Berita_Acara_Peminjaman" onclick="openMenu('Berita_Acara_Peminjaman')"><i class="bi bi-journal-check me-2"></i> BA Peminjaman BMN</a>
+        <a class="nav-link" data-menu="Tanda_Terima_Lainnya" onclick="openMenu('Tanda_Terima_Lainnya')"><i class="bi bi-receipt-cutoff me-2"></i> Tanda Terima Lainnya</a>
+        <a class="nav-link text-warning" data-menu="keamanan" onclick="openMenu('keamanan')"><i class="bi bi-shield-lock me-2"></i> Keamanan</a>
+        <a id="menu-admin" class="nav-link d-none" data-menu="manajemen_user" onclick="openMenu('manajemen_user')"><i class="bi bi-people-fill me-2"></i> Kelola User</a>
+        <a id="menu-drive" class="nav-link d-none" data-menu="dokumen_tercetak" onclick="openMenu('dokumen_tercetak')"><i class="bi bi-hdd-fill me-2"></i> Dokumen Tercetak</a>
+        
+        <div class="mt-3 border-top border-secondary pt-2">
+          <a class="nav-link text-info" href="https://script.google.com/macros/s/AKfycbywfvfpdkeskEOPgmULA0F_MFfqfSDFOqN9C3S8Z5_h63OqiBIAR7zAUKpS8hLiF00O/exec" target="_blank">
+            <i class="bi bi-archive-fill me-2"></i> Aplikasi Arsip
+          </a>
+        </div>
+
+        <div id="admin-toggle-container" class="d-none mt-3 mx-1 p-2 rounded" style="background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.12);">
+           <div class="d-flex justify-content-between align-items-center">
+              <span style="font-size: 0.75rem; color: #cbd5e1; font-weight: bold;"><i class="bi bi-power me-1"></i> STATUS SISTEM</span>
+              <div class="form-check form-switch m-0">
+                <input class="form-check-input" type="checkbox" id="appStatusToggle" onchange="toggleAppStatus(this)" style="cursor: pointer;">
+              </div>
+           </div>
+        </div>
+        <a class="nav-link text-danger mt-2" onclick="doLogout()"><i class="bi bi-box-arrow-left me-2"></i> LOGOUT</a>
+      </nav>
+    </div>
+ 
+    <div class="col-md-9 col-lg-10 p-4 bg-light" style="min-height: 100vh; overflow-y: auto;">
+      
+      <div id="dashboard-view" class="view-section">
+        <h3 class="fw-bold text-primary mb-4">Dashboard Utama</h3>
+        <div class="row g-3 mb-4">
+          <div class="col-md-8">
+            <div class="card p-4 border-0 shadow-sm text-white h-100" style="background: linear-gradient(45deg, #002d55, #00509e); border-radius: 15px;">
+              <h4>Selamat Datang!</h4>
+              <p>Silakan pilih menu di samping untuk membuat dokumen penyaluran/peminjaman BMN. Semangat Selalu Dalam Bekerja. Tkz.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="widget-robot h-100 d-flex flex-column justify-content-center text-center">
+              <div class="robot-label">SYSTEM TIME // WITA</div>
+              <div id="clock-time" class="robot-time">00:00:00</div>
+              <div id="clock-date" class="robot-date">LOADING...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+ 
+      <div id="form-view" class="view-section d-none">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 id="form-title" class="fw-bold text-uppercase text-primary m-0">JUDUL FORM</h4>
+          <div>
+            <button class="btn btn-warning shadow-sm me-2" onclick="toggleTable(true)"><i class="bi bi-clock-history"></i> Riwayat & Cetak</button>
+            <button class="btn btn-secondary shadow-sm" onclick="openMenu('dashboard')">Tutup</button>
+          </div>
+        </div>
+
+        <div id="input-container">
+          <div class="card shadow-sm border-0 p-4">
+            <form id="activeForm">
+              <input type="hidden" id="edit-id" value=""> 
+              
+              <div id="jenis-dok-container" class="row mb-4 d-none p-3 border rounded shadow-sm mx-0" style="background-color: #eef2f7;">
+                <label class="col-sm-3 col-form-label fw-bold text-primary">Jenis Cetakan Dokumen</label>
+                <div class="col-sm-9 d-flex align-items-center">
+                  <div class="form-check form-check-inline me-4">
+                    <input class="form-check-input" type="radio" name="jenisDok" id="jd_bast" value="BAST" checked>
+                    <label class="form-check-label fw-bold" for="jd_bast">Berita Acara (BAST)</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="jenisDok" id="jd_tt" value="Tanda_Terima">
+                    <label class="form-check-label fw-bold" for="jd_tt">Tanda Terima</label>
+                  </div>
+                </div>
+              </div>
+              <div class="row mb-4">
+                <label class="col-sm-2 col-form-label fw-bold">Tanggal</label>
+                <div class="col-sm-4">
+                  <input type="date" id="tglInput" class="form-control" onchange="updateDateDisplay(this.value)">
+                </div>
+                <div class="col-sm-6">
+                  <input type="text" id="tglDisplay" class="form-control bg-light" readonly placeholder="Format Surat">
+                </div>
+              </div>
+
+              <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                  <div class="card h-100 border-primary">
+                    <div class="card-header bg-primary text-white fw-bold">YANG MENYERAHKAN</div>
+                    <div class="card-body">
+                      <div class="mb-2 position-relative">
+                        <label class="small fw-bold">Nama</label>
+                        <input type="text" id="p1-nama" class="form-control" onkeyup="doSearch(this, 'p1')" autocomplete="off" placeholder="Ketik nama...">
+                        <div id="p1-res" class="autocomplete-box d-none"></div>
+                      </div>
+                      <div class="mb-2"><label class="small fw-bold">NIP</label><input id="p1-nip" class="form-control"></div>
+                      <div class="mb-2"><label class="small fw-bold">Jabatan</label><input id="p1-jabatan" class="form-control"></div>
+                      <div><label class="small fw-bold">Unit</label><input id="p1-unit" class="form-control"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="card h-100 border-warning">
+                    <div class="card-header bg-warning text-dark fw-bold">PENERIMA</div>
+                    <div class="card-body">
+                      <div class="mb-2 position-relative">
+                        <label class="small fw-bold">Nama</label>
+                        <input type="text" id="p2-nama" class="form-control" onkeyup="doSearch(this, 'p2')" autocomplete="off" placeholder="Ketik nama...">
+                        <div id="p2-res" class="autocomplete-box d-none"></div>
+                      </div>
+                      <div class="mb-2"><label class="small fw-bold">NIP</label><input id="p2-nip" class="form-control"></div>
+                      <div class="mb-2"><label class="small fw-bold">Jabatan</label><input id="p2-jabatan" class="form-control"></div>
+                      <div><label class="small fw-bold">Unit</label><input id="p2-unit" class="form-control"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <h5 class="fw-bold border-bottom pb-2 mb-3">Rincian Barang</h5>
+              <div id="item-container"></div>
+              <button type="button" class="btn btn-outline-primary w-100 py-2 border-dashed mb-4" onclick="addNewItemBlock()">
+                <i class="bi bi-plus-circle"></i> Tambah Jenis Barang Baru
+              </button>
+
+              <div class="form-check form-switch mb-3 bg-light p-3 rounded border">
+                <input class="form-check-input" type="checkbox" id="checkM" onchange="toggleMengetahui()">
+                <label class="form-check-label fw-bold">Ada Pejabat Mengetahui? (Opsional)</label>
+              </div>
+              
+              <div id="m-area" class="d-none row mb-4 p-3 border rounded bg-white shadow-sm mx-1">
+                 <h6 class="text-muted border-bottom pb-2 mb-3">Data Pejabat Mengetahui</h6>
+                 <div class="col-md-4 mb-3 position-relative">
+                    <label class="small fw-bold">Nama Pejabat</label>
+                    <input id="m-nama" class="form-control" placeholder="Ketik nama..." onkeyup="doSearch(this, 'm')" autocomplete="off">
+                    <div id="m-res" class="autocomplete-box d-none"></div>
+                 </div>
+                 <div class="col-md-4 mb-3">
+                    <label class="small fw-bold">Jabatan</label>
+                    <input id="m-jab" class="form-control" placeholder="Otomatis / Manual">
+                 </div>
+                 <div class="col-md-4 mb-3">
+                    <label class="small fw-bold">NIP</label>
+                    <input id="m-nip" class="form-control" placeholder="Otomatis / Manual">
+                 </div>
+              </div>
+
+              <div class="d-grid gap-2">
+                <button type="button" id="btn-submit" class="btn btn-primary btn-lg fw-bold shadow" onclick="submitData()">
+                  <i class="bi bi-save"></i> SIMPAN & GENERATE PDF
+                </button>
+                <button type="button" id="btn-cancel-edit" class="btn btn-secondary d-none" onclick="resetFormState()">
+                  Batal Edit
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+ 
+        <div id="history-container" class="d-none mt-4">
+          <div class="card p-3 shadow-sm">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+              <h5 class="fw-bold mb-0">Riwayat Dokumen</h5>
+              <div class="d-flex gap-2">
+                <button class="btn btn-outline-secondary btn-sm shadow-sm" onclick="toggleTable(false)">
+                    <i class="bi bi-arrow-left"></i> Kembali ke Form
+                </button>
+                <button class="btn btn-outline-primary btn-sm" onclick="generateRecapPDF()">
+                    <i class="bi bi-printer"></i> Cetak Rekap PDF
+                </button>
+                <button class="btn btn-danger btn-sm d-none" id="btn-bulk-delete" onclick="handleBulkDelete()">
+                    <i class="bi bi-trash"></i> Hapus Terpilih
+                </button>
+              </div>
+            </div>
+            
+            <div class="table-responsive">
+              <table class="table table-hover align-middle table-sm border table-bordered" id="dataTable">
+                <thead class="table-light align-middle text-center">
+                  <tr>
+                    <th width="3%"><input type="checkbox" id="checkAll" onchange="toggleAllChecks(this)"></th>
+                    <th width="10%">Tanggal</th>
+                    <th width="15%">Yang Menyerahkan</th>
+                    <th width="15%">Penerima</th>
+                    <th width="20%">Nama Barang</th>
+                    <th width="15%">Kode BMN</th>
+                    <th width="5%">Jumlah</th>
+                    <th width="10%">Pembuat</th>
+                    <th width="7%">Aksi</th>
+                  </tr>
+                  <tr>
+                    <th></th>
+                    <th><input type="text" class="filter-input" placeholder="Filter..." data-col="tglDisplay" onkeyup="handleColumnFilter()"></th>
+                    <th><input type="text" class="filter-input" placeholder="Filter..." data-col="penyerah" onkeyup="handleColumnFilter()"></th>
+                    <th><input type="text" class="filter-input" placeholder="Filter..." data-col="penerima" onkeyup="handleColumnFilter()"></th>
+                    <th><input type="text" class="filter-input" placeholder="Filter..." data-col="barangDisplay" onkeyup="handleColumnFilter()"></th>
+                    <th><input type="text" class="filter-input" placeholder="Filter..." data-col="kodeDisplay" onkeyup="handleColumnFilter()"></th>
+                    <th></th>
+                    <th><input type="text" class="filter-input" placeholder="Filter..." data-col="pembuat" onkeyup="handleColumnFilter()"></th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+
+            <div class="pagination-container">
+               <span class="text-muted small" id="page-info">Menampilkan 0-0 dari 0 data</span>
+               <nav>
+                 <ul class="pagination pagination-sm mb-0">
+                   <li class="page-item"><button class="page-link" onclick="changePage(-1)">Previous</button></li>
+                   <li class="page-item active"><span class="page-link" id="curr-page-num">1</span></li>
+                   <li class="page-item"><button class="page-link" onclick="changePage(1)">Next</button></li>
+                 </ul>
+               </nav>
+            </div>
+          </div>
+        </div>
+        <div id="drive-files-view" class="view-section d-none">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h4 class="fw-bold text-primary m-0">Dokumen Tercetak (Google Drive)</h4>
+            <small class="text-muted">Pantau dan kelola kapasitas penyimpanan PDF BAST UNIMA.</small>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-danger btn-sm shadow-sm d-none" id="btn-bulk-drive-delete" onclick="handleBulkDriveDelete()">
+              <i class="bi bi-trash"></i> Hapus Terpilih
+            </button>
+            <button class="btn btn-primary btn-sm shadow-sm" onclick="loadDriveFiles()">
+              <i class="bi bi-arrow-clockwise"></i> Refresh Data
+            </button>
+          </div>
+        </div>
+        <div class="card p-3 shadow-sm border-0 rounded">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle table-sm border table-bordered">
+              <thead class="table-light align-middle text-center">
+                <tr>
+                  <th width="3%"><input type="checkbox" id="checkAllDrive" onchange="toggleAllDriveChecks(this)"></th>
+                  <th width="5%">No</th>
+                  <th width="35%">Nama File</th>
+                  <th width="15%">Kategori</th>
+                  <th width="15%">Tanggal Dibuat</th>
+                  <th width="10%">Ukuran</th>
+                  <th width="17%">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="driveTableBody">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+        <div id="user-view" class="view-section d-none">
+          <h4>Manajemen User</h4>
+          <div class="row">
+            <div class="col-md-5 mb-4">
+                <div class="card p-4 shadow-sm">
+                   <h6 class="fw-bold">Tambah / Edit User</h6>
+                   <input type="hidden" id="u-row-edit" value="">
+                   <input id="u-new" class="form-control mb-2" placeholder="Username">
+                   <input id="p-new" type="password" class="form-control mb-2" placeholder="Password">
+                   <input id="n-new" class="form-control mb-2" placeholder="Nama Lengkap">
+                   <select id="r-new" class="form-select mb-3">
+                     <option value="STAFF">STAFF/PIMPINAN</option>
+                     <option value="ADMIN">ADMIN</option>
+                   </select>
+                   <div class="d-flex gap-2">
+                      <button class="btn btn-primary flex-fill" onclick="saveUser()">Simpan User</button>
+                      <button class="btn btn-secondary" onclick="resetUserForm()">Batal</button>
+                   </div>
+                </div>
+            </div>
+            <div class="col-md-7">
+               <div class="card p-3 shadow-sm">
+                 <h6 class="fw-bold mb-3">Daftar User</h6>
+                 <table class="table table-sm table-bordered">
+                   <thead class="table-light"><tr><th>Username</th><th>Nama</th><th>Role</th><th>Aksi</th></tr></thead>
+                   <tbody id="userTableBody"></tbody>
+                 </table>
+               </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="keamanan-view" class="view-section d-none">
+  <h4 class="fw-bold text-primary mb-4">Pengaturan Keamanan</h4>
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card p-4 shadow-sm border-0">
+        <h6>Ganti Password</h6>
+        <hr>
+        <div class="mb-3">
+          <label class="small fw-bold">Password Lama</label>
+          <input type="password" id="old-pass" class="form-control">
+        </div>
+        <div class="mb-3">
+          <label class="small fw-bold">Password Baru</label>
+          <input type="password" id="new-pass" class="form-control">
+        </div>
+        <div class="mb-3">
+          <label class="small fw-bold">Konfirmasi Password Baru</label>
+          <input type="password" id="confirm-pass" class="form-control">
+        </div>
+        <button class="btn btn-primary w-100" onclick="handleUpdatePassword()">Perbarui Password</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div id="view-memo" class="view-section d-none">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="fw-bold text-uppercase text-primary m-0">MEMO PERINTAH</h4>
+            <div>
+              <button class="btn btn-warning shadow-sm me-2" onclick="toggleTable(true)"><i class="bi bi-clock-history"></i> Riwayat & Cetak</button>
+              <button class="btn btn-secondary shadow-sm" onclick="openMenu('dashboard')">Tutup</button>
+            </div>
+          </div>
+          <div id="view-memo-form" class="card shadow-sm p-4 border-0">
+            <div class="row g-3 mb-3">
+              <div class="col-md-4 position-relative">
+                <label class="small fw-bold">Nama Pemberi Instruksi</label>
+                <input type="text" id="memo-p1-nama" class="form-control" onkeyup="doSearch(this, 'memo-p1')" autocomplete="off">
+                <div id="memo-p1-res" class="autocomplete-box d-none"></div>
+              </div>
+              <div class="col-md-4"><label class="small fw-bold">NIP Pemberi Instruksi</label><input type="text" id="memo-p1-nip" class="form-control"></div>
+              <div class="col-md-4"><label class="small fw-bold">Jabatan Pemberi Instruksi</label><input type="text" id="memo-p1-jabatan" class="form-control"></div>
+            </div>
+            <div class="row g-3 mb-4">
+              <div class="col-md-4 position-relative">
+                <label class="small fw-bold">Nama Penerima Instruksi</label>
+                <input type="text" id="memo-p2-nama" class="form-control" onkeyup="doSearch(this, 'memo-p2')" autocomplete="off">
+                <div id="memo-p2-res" class="autocomplete-box d-none"></div>
+              </div>
+              <div class="col-md-4"><label class="small fw-bold">Jabatan Penerima Instruksi</label><input type="text" id="memo-p2-jabatan" class="form-control"></div>
+              <div class="col-md-4"><label class="small fw-bold">Unit Kerja Penerima</label><input type="text" id="memo-p2-unit" class="form-control"></div>
+            </div>
+            <div class="row g-3 mb-4">
+              <div class="col-md-6"><label class="small fw-bold">Arahan Dari / Pemberi Arahan (Opsional)</label><input type="text" id="memo-arahan" class="form-control" placeholder="Contoh: Rektor / WR 2"></div>
+              <div class="col-md-6"><label class="small fw-bold">Keperluan (Opsional)</label><input type="text" id="memo-keperluan" class="form-control" placeholder="Contoh: Operasional Kantor"></div>
+            </div>
+            <h6 class="fw-bold border-bottom pb-2">Daftar Barang (Sistem Sama Dengan BAST)</h6>
+            <div id="memo-item-container"></div>
+            <button type="button" class="btn btn-outline-warning w-100 py-2 border-dashed mb-4" onclick="addMemoItemBlock()">
+              <i class="bi bi-plus-circle"></i> Tambah Barang Ke Memo
+            </button>
+            <button type="button" class="btn btn-primary btn-lg fw-bold" onclick="submitDocTemplate('Memo_Perintah')"><i class="bi bi-save"></i> SIMPAN & CETAK MEMO</button>
+          </div>
+        </div>
+
+        <div id="view-tt-lainnya" class="view-section d-none">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="fw-bold text-uppercase text-primary m-0">TANDA TERIMA LAINNYA</h4>
+            <div>
+              <button class="btn btn-warning shadow-sm me-2" onclick="toggleTable(true)"><i class="bi bi-clock-history"></i> Riwayat & Cetak</button>
+              <button class="btn btn-secondary shadow-sm" onclick="openMenu('dashboard')">Tutup</button>
+            </div>
+          </div>
+          <div id="view-tt-lainnya-form" class="card shadow-sm p-4 border-0">
+            <div class="row mb-3">
+              <div class="col-md-4"><label class="small fw-bold">Tanggal</label><input type="date" id="tt-tgl" class="form-control"></div>
+              <div class="col-md-8"><label class="small fw-bold">Status Serah Terima</label><br>
+                <div class="form-check form-check-inline mt-2"><input class="form-check-input" type="radio" name="tt-status" value="diserahkan" checked> <label class="form-check-label">Diserahkan</label></div>
+                <div class="form-check form-check-inline mt-2"><input class="form-check-input" type="radio" name="tt-status" value="diterima"> <label class="form-check-label">Diterima</label></div>
+              </div>
+            </div>
+            <div class="row g-3 mb-3 border-bottom pb-3">
+              <div class="col-md-5"><label class="small fw-bold">Nama Barang</label><input type="text" id="tt-brg" class="form-control"></div>
+              <div class="col-md-2"><label class="small fw-bold">Jumlah</label><input type="number" id="tt-jml" class="form-control"></div>
+              <div class="col-md-2"><label class="small fw-bold">Satuan</label><input type="text" id="tt-sat" class="form-control" placeholder="Contoh: Unit/Dus"></div>
+              <div class="col-md-3"><label class="small fw-bold">Keperluan</label><input type="text" id="tt-kep" class="form-control" placeholder="Tujuan serah terima"></div>
+            </div>
+            
+            <div class="row g-3 mb-4">
+              <div class="col-md-6 border-end">
+                <h6 class="fw-bold bg-light p-2 rounded">YANG MENYERAHKAN</h6>
+                <div class="p-2 border rounded mb-2 position-relative">
+                    <input type="text" id="tt-p1-1-nama" class="form-control form-control-sm mb-1" placeholder="Nama" onkeyup="doSearch(this, 'tt-p1-1')" autocomplete="off">
+                    <div id="tt-p1-1-res" class="autocomplete-box d-none"></div>
+                    <input type="text" id="tt-p1-1-nip" class="form-control form-control-sm mb-1" placeholder="NIP (Opsional)">
+                    <input type="text" id="tt-p1-1-jabatan" class="form-control form-control-sm" placeholder="Jabatan (Opsional)">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <h6 class="fw-bold bg-light p-2 rounded">YANG MENERIMA</h6>
+                <div class="p-2 border rounded mb-2 position-relative">
+                    <input type="text" id="tt-p2-1-nama" class="form-control form-control-sm mb-1" placeholder="Nama" onkeyup="doSearch(this, 'tt-p2-1')" autocomplete="off">
+                    <div id="tt-p2-1-res" class="autocomplete-box d-none"></div>
+                    <input type="text" id="tt-p2-1-nip" class="form-control form-control-sm mb-1" placeholder="NIP (Opsional)">
+                    <input type="text" id="tt-p2-1-jabatan" class="form-control form-control-sm" placeholder="Jabatan (Opsional)">
+                </div>
+              </div>
+            </div>
+            
+            <button type="button" class="btn btn-primary btn-lg fw-bold" onclick="submitDocTemplate('Tanda_Terima_Lainnya')"><i class="bi bi-save"></i> SIMPAN & CETAK TANDA TERIMA</button>
+          </div>
+        </div>
+
+        <div id="view-kendaraan" class="view-section d-none">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="fw-bold text-uppercase text-primary m-0">BAST KENDARAAN DINAS</h4>
+            <div>
+              <button class="btn btn-warning shadow-sm me-2" onclick="toggleTable(true)"><i class="bi bi-clock-history"></i> Riwayat & Cetak</button>
+              <button class="btn btn-secondary shadow-sm" onclick="openMenu('dashboard')">Tutup</button>
+            </div>
+          </div>
+          <div id="view-kendaraan-form" class="card shadow-sm p-4 border-0">
+            <div class="row mb-4"><div class="col-md-4"><label class="small fw-bold">Tanggal</label><input type="date" id="kend-tgl" class="form-control"></div></div>
+            
+            <h6 class="fw-bold mb-3 bg-light p-2 rounded">Spesifikasi Kendaraan</h6>
+            <div class="row g-3 mb-4 border-bottom pb-4">
+              <div class="col-md-4"><label class="small fw-bold">Jenis Kendaraan</label><input type="text" id="kend-jenis" class="form-control" placeholder="Cth: Toyota Innova"></div>
+              <div class="col-md-4"><label class="small fw-bold">Nomor Polisi</label>
+                <div class="input-group">
+                  <input type="text" id="kend-plat1" class="form-control text-center" placeholder="DB" maxlength="2">
+                  <input type="text" id="kend-plat2" class="form-control text-center" placeholder="1234">
+                  <input type="text" id="kend-plat3" class="form-control text-center" placeholder="ABC" maxlength="3">
+                </div>
+              </div>
+              <div class="col-md-4"><label class="small fw-bold">Kondisi (Opsional)</label><input type="text" id="kend-kondisi" class="form-control" placeholder="Cth : Baik / Rusak Ringan"></div>
+            </div>
+
+            <div class="row g-3 mb-4">
+              <div class="col-md-6 border-end">
+                <h6 class="fw-bold bg-light p-2 rounded">YANG MENYERAHKAN</h6>
+                <div class="p-2 border rounded mb-2 position-relative">
+                    <input type="text" id="kend-p1-1-nama" class="form-control form-control-sm mb-1" placeholder="Nama" onkeyup="doSearch(this, 'kend-p1-1')" autocomplete="off">
+                    <div id="kend-p1-1-res" class="autocomplete-box d-none"></div>
+                    <input type="text" id="kend-p1-1-nip" class="form-control form-control-sm mb-1" placeholder="NIP (Opsional)">
+                    <input type="text" id="kend-p1-1-jabatan" class="form-control form-control-sm" placeholder="Jabatan (Opsional)">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <h6 class="fw-bold bg-light p-2 rounded">YANG MENERIMA</h6>
+                <div class="p-2 border rounded mb-2 position-relative">
+                    <input type="text" id="kend-p2-1-nama" class="form-control form-control-sm mb-1" placeholder="Nama" onkeyup="doSearch(this, 'kend-p2-1')" autocomplete="off">
+                    <div id="kend-p2-1-res" class="autocomplete-box d-none"></div>
+                    <input type="text" id="kend-p2-1-nip" class="form-control form-control-sm mb-1" placeholder="NIP (Opsional)">
+                    <input type="text" id="kend-p2-1-jabatan" class="form-control form-control-sm" placeholder="Jabatan (Opsional)">
+                </div>
+              </div>
+            </div>
+            <button type="button" class="btn btn-primary btn-lg fw-bold" onclick="submitDocTemplate('BAST_Kendaraan_Dinas')"><i class="bi bi-save"></i> SIMPAN & CETAK KENDARAAN</button>
+          </div>
+        </div>
+    </div> <!-- penutup col-md-9 col-lg-10 -->
+  </div> <!-- penutup row g-0 -->
+</div> <!-- penutup main-page -->
+
+<div class="chat-fab position-fixed" id="chat-fab" onclick="toggleChatWindow()">
+  <i class="bi bi-chat-dots-fill"></i>
+  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light" id="chat-badge-main" style="display:none; font-size: 0.75rem;">
+    0
+  </span>
+</div>
+
+<div class="chat-widget" id="chat-widget">
+  <div class="chat-header">
+    <div class="chat-header-title">
+      <button class="btn btn-sm btn-outline-light border-0 d-none" id="btn-back-chat" onclick="showContactList()"><i class="bi bi-arrow-left"></i></button>
+      <span id="chat-header-text">Pesan Internal</span>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+      <i class="bi bi-trash3-fill d-none" id="btn-clear-chat" title="Kosongkan Obrolan" onclick="requestClearChat()" style="cursor:pointer; font-size:1.1rem;" onmouseover="this.style.color='#ffdddd'" onmouseout="this.style.color='white'"></i>
+      <i class="bi bi-x-lg" style="cursor:pointer; font-size:1.1rem;" title="Tutup" onclick="toggleChatWindow()"></i>
+    </div>
+  </div>
+  
+  <div class="chat-view" id="view-contacts">
+    <div class="p-2 bg-light text-center border-bottom d-none" id="admin-monitor-btn">
+      <button class="btn btn-sm btn-warning w-100 fw-bold" onclick="openChatRoom('PANTAUAN_ADMIN')"><i class="bi bi-eye"></i> Pantau Semua Chat (Admin)</button>
+    </div>
+    <div class="contact-list" id="contact-list-body">
+      <div class="text-center mt-4 spinner-border text-primary spinner-border-sm"></div>
+    </div>
+  </div>
+  
+
+  <div class="chat-view hidden" id="view-chatroom">
+    <div class="chat-room-body" id="chat-room-body">
+      </div>
+    <div id="emoji-container" class="d-none">
+       <div class="emoji-item" onclick="addEmoji('😀')">😀</div><div class="emoji-item" onclick="addEmoji('😂')">😂</div>
+       <div class="emoji-item" onclick="addEmoji('😍')">😍</div><div class="emoji-item" onclick="addEmoji('🙏')">🙏</div>
+       <div class="emoji-item" onclick="addEmoji('👍')">👍</div><div class="emoji-item" onclick="addEmoji('🔥')">🔥</div>
+       <div class="emoji-item" onclick="addEmoji('✔️')">✔️</div><div class="emoji-item" onclick="addEmoji('❤️')">❤️</div>
+       <div class="emoji-item" onclick="addEmoji('😡')">😡</div><div class="emoji-item" onclick="addEmoji('😭')">😭</div>
+       <div class="emoji-item" onclick="addEmoji('🎉')">🎉</div><div class="emoji-item" onclick="addEmoji('✅')">✅</div>
+    </div>
+    
+    <div class="chat-footer" id="chat-footer-input">
+      <button class="emoji-btn" onclick="toggleEmoji()"><i class="bi bi-emoji-smile"></i></button>
+      <input type="text" id="chat-input" class="form-control form-control-sm" placeholder="Ketik pesan..." onkeypress="if(event.key === 'Enter') sendPrivateChat()">
+      <button class="btn btn-primary btn-sm" onclick="sendPrivateChat()"><i class="bi bi-send"></i></button>
+    </div>
+  </div>
+</div>
+<script>
+  // =================================================================
+  // 1. JEMBATAN API (CLOUDFLARE -> GOOGLE APPS SCRIPT)
+  // =================================================================
+  const GAS_API_URL = '/api';
+
+  function createGasRunner(onSuccess = null, onFailure = null) {
+    return new Proxy({}, {
+      get(_, prop) {
+        if (prop === 'withSuccessHandler') return (fn) => createGasRunner(fn, onFailure);
+        if (prop === 'withFailureHandler') return (fn) => createGasRunner(onSuccess, fn);
+        return (...args) => {
+          fetch(GAS_API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: prop, args: args })
+          })
+          .then(async res => {
+            const rawText = await res.text();
+            try {
+              return JSON.parse(rawText);
+            } catch (e) {
+              throw new Error('Server tidak mengembalikan JSON (HTTP ' + res.status + '). Cek https://bastbmn.pages.dev/api');
+            }
+          })
+          .then(json => {
+            if (json.ok) {
+              if (typeof onSuccess === 'function') onSuccess(json.data);
+            } else {
+              const err = new Error(json.error || 'Terjadi kesalahan pada server.');
+              if (typeof onFailure === 'function') onFailure(err);
+              else console.error('GAS Error [' + prop + ']:', err);
+            }
+          })
+          .catch(err => {
+            if (typeof onFailure === 'function') onFailure(err);
+            else console.error('Network Error [' + prop + ']:', err);
+          });
+        };
+      }
+    });
+  }
+
+  window.google = {
+    script: {
+      get run() { return createGasRunner(); }
+    }
+  };
+  // =================================================================
+  // 2. KONFIGURASI NAMA TASKBAR & LINK URL PER MENU
+  // =================================================================
+  const MENU_ROUTES = {
+    'login':                   { path: '/login',                 title: 'Login | BAST BMN UNIMA' },
+    'dashboard':               { path: '/dashboard',             title: 'Dashboard | BAST BMN UNIMA' },
+    'BAST_Peralatan_Mesin':    { path: '/bast-bmn',              title: 'BAST BMN | UNIMA' },
+    'BAST_Kendaraan_Dinas':    { path: '/bast-kendaraan-dinas',  title: 'BAST Kendaraan Dinas | UNIMA' },
+    'Memo_Perintah':           { path: '/memo-perintah',         title: 'Memo Perintah | UNIMA' },
+    'Berita_Acara_Peminjaman': { path: '/ba-peminjaman',         title: 'BA Peminjaman BMN | UNIMA' },
+    'Tanda_Terima_Lainnya':    { path: '/tanda-terima-lainnya',  title: 'Tanda Terima Lainnya | UNIMA' },
+    'keamanan':                { path: '/keamanan',              title: 'Pengaturan Keamanan | UNIMA' },
+    'manajemen_user':          { path: '/kelola-user',           title: 'Kelola User | UNIMA' },
+    'dokumen_tercetak':        { path: '/dokumen-tercetak',      title: 'Dokumen Tercetak | UNIMA' }
+  };
+
+  function getMenuFromPath(pathname) {
+    const cleanPath = pathname.replace(/\/+$/, '') || '/';
+    for (const [menuKey, route] of Object.entries(MENU_ROUTES)) {
+      if (route.path === cleanPath) return menuKey;
+    }
+    return 'dashboard';
+  }
+
+  function updateBrowserTabAndUrl(menuKey, push = true) {
+    const route = MENU_ROUTES[menuKey] || MENU_ROUTES['dashboard'];
+    document.title = route.title;
+    if (push && window.location.pathname !== route.path) {
+      window.history.pushState({ menu: menuKey }, route.title, route.path);
+    }
+  }
+
+  // =================================================================
+  // 3. STATE GLOBAL & INISIALISASI
+  // =================================================================
+  let userSession = JSON.parse(localStorage.getItem('bastUser')) || null;
+  let currentMenu = "";
+  let allTableData = []; 
+  let filteredData = []; 
+  let currentPage = 1;
+  const rowsPerPage = 10;
+  
+  const loader = (show) => document.getElementById('loader').style.display = show ? 'flex' : 'none';
+
+  window.onload = function() {
+    startClock();
+    if (userSession) {
+      showMainPage(userSession);
+    } else {
+      updateBrowserTabAndUrl('login', true);
+    }
+
+    document.getElementById('pass').addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') handleLogin();
+    });
+
+    document.addEventListener('click', function(e) {
+      document.querySelectorAll('.autocomplete-box').forEach(box => {
+        if (!box.contains(e.target) && e.target.tagName !== 'INPUT') {
+          box.classList.add('d-none');
+        }
+      });
+    });
+
+    // Dukung tombol Back / Forward di browser
+    window.addEventListener('popstate', function(e) {
+      if (!userSession) return;
+      const targetMenu = (e.state && e.state.menu) ? e.state.menu : getMenuFromPath(window.location.pathname);
+      if (targetMenu !== 'login') openMenu(targetMenu, false);
+    });
+  };
+
+  function startClock() {
+    setInterval(() => {
+      const now = new Date();
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      const timeStr = now.toLocaleTimeString('id-ID', {hour12: false});
+      document.getElementById('clock-time').innerText = timeStr;
+      document.getElementById('clock-date').innerText = now.toLocaleDateString('id-ID', options);
+    }, 1000);
+  }
+
+  function handleLogin() {
+    const u = document.getElementById('user').value;
+    const p = document.getElementById('pass').value;
+    if(!u || !p) return;
+    
+    loader(true);
+    google.script.run
+      .withSuccessHandler(res => {
+        loader(false);
+        if(res.status === 'success') {
+          userSession = res; // Perbaikan: simpan ke variabel global langsung
+          localStorage.setItem('bastUser', JSON.stringify(res));
+          showMainPage(res);
+        } else {
+          Swal.fire('Error', res.message, 'error');
+        }
+      })
+      .withFailureHandler(err => {
+        loader(false);
+        Swal.fire('Koneksi Gagal', err.message, 'error');
+      })
+      .loginUser(u, p);
+  }
+
+  function showMainPage(data) {
+    document.getElementById('login-page').classList.add('d-none');
+    document.getElementById('main-page').classList.remove('d-none');
+    document.getElementById('welcome-name').innerText = data.nama;
+    document.getElementById('role-tag').innerText = data.role;
+    
+    if(data.role === 'ADMIN') {
+      document.getElementById('menu-admin').classList.remove('d-none');
+      document.getElementById('menu-drive').classList.remove('d-none'); 
+      document.getElementById('admin-toggle-container').classList.remove('d-none');
+      google.script.run.withSuccessHandler(status => {
+        document.getElementById('appStatusToggle').checked = status.isActive;
+      }).getAppStatus();
+    }
+
+    // Buka menu sesuai URL saat ini (jika dari /login atau /, buka dashboard)
+    const initialMenu = getMenuFromPath(window.location.pathname);
+    openMenu(initialMenu === 'login' ? 'dashboard' : initialMenu, true);
+  }
+
+  function doLogout() {
+    Swal.fire({
+      title: 'Konfirmasi Logout', text: "Anda yakin ingin keluar?", icon: 'question',
+      showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Ya, Keluar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        localStorage.removeItem('bastUser');
+        sessionStorage.clear();
+        window.location.href = '/login';
+      }
+    });
+  }
+
+  function openMenu(menu, pushHistory = true) {
+    // Proteksi jika user non-admin mengetik URL admin secara manual
+    if ((menu === 'manajemen_user' || menu === 'dokumen_tercetak') && userSession && userSession.role !== 'ADMIN') {
+      menu = 'dashboard';
+    }
+
+    currentMenu = menu;
+    updateBrowserTabAndUrl(menu, pushHistory);
+    
+    document.querySelectorAll('.view-section').forEach(el => el.classList.add('d-none'));
+    document.querySelectorAll('.nav-link').forEach(el => {
+      el.classList.toggle('active', el.getAttribute('data-menu') === menu);
+    });
+    
+    document.getElementById('history-container').classList.add('d-none');
+    document.getElementById('history-container').classList.remove('d-block');
+    
+    if(menu === 'dashboard') {
+      document.getElementById('dashboard-view').classList.remove('d-none');
+    } 
+    else if(menu === 'manajemen_user') {
+      document.getElementById('user-view').classList.remove('d-none');
+      loadUserTable(); 
+    } 
+    else if(menu === 'dokumen_tercetak') {
+      document.getElementById('drive-files-view').classList.remove('d-none');
+      loadDriveFiles(); 
+    } 
+    else if(menu === 'Memo_Perintah') {
+      document.getElementById('view-memo').classList.remove('d-none');
+      document.getElementById('view-memo-form').classList.remove('d-none');
+    }
+    else if(menu === 'Tanda_Terima_Lainnya') {
+      document.getElementById('view-tt-lainnya').classList.remove('d-none');
+      document.getElementById('view-tt-lainnya-form').classList.remove('d-none');
+    }
+    else if(menu === 'keamanan') {
+      document.getElementById('keamanan-view').classList.remove('d-none');
+    }
+    else if(menu === 'BAST_Kendaraan_Dinas') {
+      document.getElementById('view-kendaraan').classList.remove('d-none');
+      document.getElementById('view-kendaraan-form').classList.remove('d-none');
+    }
+    else {
+      document.getElementById('form-view').classList.remove('d-none');
+      document.getElementById('input-container').classList.remove('d-none');
+      
+      if (menu === 'BAST_Peralatan_Mesin') {
+          document.getElementById('form-title').innerText = 'Berita Acara / Tanda Terima';
+          document.getElementById('jenis-dok-container').classList.remove('d-none'); 
+      } else {
+          document.getElementById('form-title').innerText = menu.replace(/_/g, ' ');
+          document.getElementById('jenis-dok-container').classList.add('d-none'); 
+      }
+      resetFormState();
+    }
+  }
+
+  let searchTimeout = null;
+  function doSearch(input, type) {
+    const val = input.value;
+    const boxId = type + '-res';
+    const box = document.getElementById(boxId);
+    if(val.length < 3) { box.classList.add('d-none'); return; }
+
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        google.script.run.withSuccessHandler(data => {
+            box.innerHTML = '';
+            if(data.length === 0) {
+                box.classList.add('d-none');
+            } else {
+                box.classList.remove('d-none');
+                data.forEach(row => {
+                    const div = document.createElement('div');
+                    div.className = 'autocomplete-item';
+                    div.innerHTML = `<strong>${row[0]}</strong><br><small class="text-muted">${row[2]}</small>`;
+                    div.onclick = function() { selectResult(row, type, boxId); };
+                    box.appendChild(div);
+                });
+            }
+        }).searchPersonil(val);
+    }, 400); 
+  }
+
+  function selectResult(data, type, boxId) {
+    document.getElementById(boxId).classList.add('d-none');
+    if(type === 'm') {
+        document.getElementById('m-nama').value = data[0];
+        document.getElementById('m-nip').value = data[1];
+        document.getElementById('m-jab').value = data[2];
+    } else {
+        if(document.getElementById(type + '-nama')) document.getElementById(type + '-nama').value = data[0];
+        if(document.getElementById(type + '-nip')) document.getElementById(type + '-nip').value = data[1];
+        if(document.getElementById(type + '-jabatan')) document.getElementById(type + '-jabatan').value = data[2];
+        if(document.getElementById(type + '-unit')) document.getElementById(type + '-unit').value = data[4] || '';
+    }
+  }
+
+  let barangSearchTimeout = null;
+  function doSearchBarang(input, idx) {
+    const val = input.value;
+    const boxId = `barang-res-${idx}`;
+    const box = document.getElementById(boxId);
+    if(val.length < 3) { box.classList.add('d-none'); return; }
+
+    clearTimeout(barangSearchTimeout);
+    barangSearchTimeout = setTimeout(() => {
+        google.script.run.withSuccessHandler(data => {
+            box.innerHTML = '';
+            if(data.length === 0) { box.classList.add('d-none'); } else {
+                box.classList.remove('d-none');
+                data.forEach(row => {
+                    const div = document.createElement('div');
+                    div.className = 'autocomplete-item';
+                    div.innerHTML = `<strong>${row[0]}</strong><br><small class="text-muted">Kode: ${row[1]}</small>`;
+                    div.onclick = function() { 
+                        document.getElementById(boxId).classList.add('d-none');
+                        const block = document.getElementById(`item-block-${idx}`);
+                        block.querySelector('.item-nama').value = row[0];
+                        block.querySelector('.item-kode').value = row[1];
+                    };
+                    box.appendChild(div);
+                });
+            }
+        }).searchBarang(val);
+    }, 400);
+  }
+
+  function toggleMengetahui() {
+      const isChecked = document.getElementById('checkM').checked;
+      document.getElementById('m-area').classList.toggle('d-none', !isChecked);
+  }
+
+  function updateDateDisplay(val) {
+      if(!val) return;
+      google.script.run.withSuccessHandler(str => {
+          document.getElementById('tglDisplay').value = str;
+      }).formatTanggalIndo(val);
+  }
+
+  function resetFormState() {
+      document.getElementById('activeForm').reset();
+      document.getElementById('item-container').innerHTML = '';
+      document.getElementById('edit-id').value = '';
+      document.getElementById('btn-submit').innerHTML = '<i class="bi bi-save"></i> SIMPAN & GENERATE PDF';
+      document.getElementById('btn-submit').classList.replace('btn-warning', 'btn-primary');
+      document.getElementById('btn-cancel-edit').classList.add('d-none');
+      document.getElementById('m-area').classList.add('d-none');
+      
+      const jd_bast = document.getElementById('jd_bast');
+      if(jd_bast) jd_bast.checked = true;
+      addNewItemBlock(); 
+  }
+
+  function createItemBlockHTML(idx) {
+    return `
+      <div class="card mb-3 item-card p-3 bg-white shadow-sm" id="item-block-${idx}">
+        <div class="row g-2 mb-2">
+          <div class="col-md-5"><label class="small fw-bold">Nama Barang</label><div class="position-relative"><input class="form-control item-nama" onkeyup="doSearchBarang(this, '${idx}')" autocomplete="off"><div id="barang-res-${idx}" class="autocomplete-box d-none"></div></div></div>
+          <div class="col-md-3"><label class="small fw-bold">Kode Barang</label><input class="form-control item-kode"></div>
+          <div class="col-md-2"><label class="small fw-bold">Jml (Auto)</label><input class="form-control item-total text-center bg-light fw-bold" readonly value="0"></div>
+          <div class="col-md-2 d-flex align-items-end"><button type="button" class="btn btn-danger w-100" onclick="document.getElementById('item-block-${idx}').remove()"><i class="bi bi-trash"></i> Hapus</button></div>
+        </div>
+        <div class="bg-light p-2 rounded">
+          <label class="small fw-bold text-muted mb-1"><i class="bi bi-list-ol"></i> Rincian NUP & Kondisi</label>
+          <div class="details-container" id="details-${idx}"></div>
+          <button type="button" class="btn btn-sm btn-success mt-2" onclick="addDetailRow('${idx}')"><i class="bi bi-plus"></i> Tambah NUP</button>
+        </div>
+      </div>`;
+  }
+
+  function createDetailRowHTML(parentId) {
+    return `
+      <div class="input-group input-group-sm mb-1 detail-row">
+        <span class="input-group-text">NUP</span><input type="text" class="form-control detail-nup">
+        <span class="input-group-text">Kondisi</span><input type="text" class="form-control detail-kondisi" value="Baik">
+        <button class="btn btn-outline-danger" type="button" onclick="this.closest('.detail-row').remove(); updateTotal('${parentId}')"><i class="bi bi-x"></i></button>
+      </div>`;
+  }
+
+  function addNewItemBlock() {
+    const idx = Date.now(); 
+    const div = document.createElement('div');
+    div.innerHTML = createItemBlockHTML(idx);
+    document.getElementById('item-container').appendChild(div.firstElementChild);
+    addDetailRow(idx); 
+  }
+
+  function addDetailRow(parentId) {
+    const div = document.createElement('div');
+    div.innerHTML = createDetailRowHTML(parentId);
+    document.getElementById(`details-${parentId}`).appendChild(div.firstElementChild);
+    updateTotal(parentId);
+  }
+
+  function updateTotal(parentId) {
+    document.getElementById(`item-block-${parentId}`).querySelector('.item-total').value = 
+      document.getElementById(`details-${parentId}`).querySelectorAll('.detail-row').length;
+  }
+
+  function submitData() {
+    const tgl = document.getElementById('tglInput').value;
+    if(!tgl) return Swal.fire('Warning', 'Tanggal wajib diisi', 'warning');
+
+    const payload = {
+      tanggalInput: tgl,
+      penyerahNama: document.getElementById('p1-nama').value,
+      penyerahNIP: document.getElementById('p1-nip').value,
+      penyerahJabatan: document.getElementById('p1-jabatan').value,
+      penyerahUnit: document.getElementById('p1-unit').value,
+      penerimaNama: document.getElementById('p2-nama').value,
+      penerimaNIP: document.getElementById('p2-nip').value,
+      penerimaJabatan: document.getElementById('p2-jabatan').value,
+      penerimaUnit: document.getElementById('p2-unit').value,
+      isMengetahui: document.getElementById('checkM').checked,
+      m_nama: document.getElementById('m-nama').value,
+      m_jabatan: document.getElementById('m-jab').value,
+      m_nip: document.getElementById('m-nip').value,
+      jenisDokumen: document.querySelector('input[name="jenisDok"]:checked').value,
+      items: []
+    };
+
+    document.querySelectorAll('.item-card').forEach(block => {
+      const item = {
+        nama: block.querySelector('.item-nama').value,
+        kode: block.querySelector('.item-kode').value,
+        total: block.querySelector('.item-total').value,
+        details: []
+      };
+      block.querySelectorAll('.detail-row').forEach(row => {
+        item.details.push({
+          nup: row.querySelector('.detail-nup').value,
+          kondisi: row.querySelector('.detail-kondisi').value
+        });
+      });
+      payload.items.push(item);
+    });
+
+    if(payload.items.length === 0) return Swal.fire('Warning', 'Barang belum diisi', 'warning');
+    const editId = document.getElementById('edit-id').value; 
+    loader(true);
+
+    google.script.run.withSuccessHandler(res => {
+      loader(false);
+      if(res.status === 'success') {
+        Swal.fire({
+          title: 'Sukses!', text: res.message, icon: 'success',
+          showCancelButton: true, confirmButtonText: 'Buka PDF', cancelButtonText: 'Tutup'
+        }).then((result) => {
+          if (result.isConfirmed) window.open(res.url, '_blank');
+        });
+        resetFormState();
+        if(document.getElementById('history-container').classList.contains('d-block')) { toggleTable(true); }
+      } else {
+        Swal.fire('Gagal', res.message, 'error');
+      }
+    }).processDokumen(currentMenu, payload, userSession.nama, editId || null);
+  }
+
+  function toggleTable(show) {
+    if(show) {
+      if(document.getElementById('input-container')) document.getElementById('input-container').classList.add('d-none');
+      if(document.getElementById('view-memo-form')) document.getElementById('view-memo-form').classList.add('d-none');
+      if(document.getElementById('view-tt-lainnya-form')) document.getElementById('view-tt-lainnya-form').classList.add('d-none');
+      if(document.getElementById('view-kendaraan-form')) document.getElementById('view-kendaraan-form').classList.add('d-none');
+      
+      document.getElementById('history-container').classList.remove('d-none');
+      document.getElementById('history-container').classList.add('d-block');
+      fetchTableData();
+    } else {
+      document.getElementById('history-container').classList.add('d-none');
+      document.getElementById('history-container').classList.remove('d-block');
+      
+      if (currentMenu === 'Memo_Perintah') {
+          document.getElementById('view-memo-form').classList.remove('d-none');
+      } else if (currentMenu === 'Tanda_Terima_Lainnya') {
+          document.getElementById('view-tt-lainnya-form').classList.remove('d-none');
+      } else if (currentMenu === 'BAST_Kendaraan_Dinas') {
+          document.getElementById('view-kendaraan-form').classList.remove('d-none');
+      } else {
+          document.getElementById('input-container').classList.remove('d-none');
+          resetFormState(); 
+      }
+    }
+  }
+
+  function fetchTableData() {
+    document.querySelector('#dataTable').innerHTML = '<thead class="table-light align-middle text-center"></thead><tbody></tbody>';
+    const headEl = document.querySelector('#dataTable thead');
+    const tbody = document.querySelector('#dataTable tbody');
+    
+    if (currentMenu === 'BAST_Kendaraan_Dinas') {
+      headEl.innerHTML = `<tr><th width="3%"><input type="checkbox" id="checkAll" onchange="toggleAllChecks(this)"></th><th width="10%">Tanggal</th><th width="18%">Pihak Pertama<br><small>(Menyerahkan)</small></th><th width="18%">Pihak Kedua<br><small>(Penerima)</small></th><th width="15%">Jenis Kendaraan</th><th width="15%">Nomor Polisi</th><th width="13%">Pembuat</th><th width="8%">Aksi</th></tr>
+      <tr><th></th><th><input type="text" class="filter-input" data-col="tglDisplay" onkeyup="handleColumnFilter()"></th><th><input type="text" class="filter-input" data-col="penyerahHTML" onkeyup="handleColumnFilter()"></th><th><input type="text" class="filter-input" data-col="penerimaHTML" onkeyup="handleColumnFilter()"></th><th><input type="text" class="filter-input" data-col="jenisKendaraan" onkeyup="handleColumnFilter()"></th><th><input type="text" class="filter-input" data-col="nomorPolisi" onkeyup="handleColumnFilter()"></th><th><input type="text" class="filter-input" data-col="pembuat" onkeyup="handleColumnFilter()"></th><th></th></tr>`;
+    } else if (currentMenu === 'Memo_Perintah') {
+      headEl.innerHTML = `<tr><th width="3%"><input type="checkbox" id="checkAll" onchange="toggleAllChecks(this)"></th><th width="10%">Tgl Buat</th><th width="15%">Pemberi Instruksi</th><th width="15%">Penerima Instruksi</th><th width="12%">Unit Penerima</th><th width="25%">Kodefikasi & Jumlah</th><th width="12%">Pembuat</th><th width="8%">Aksi</th></tr>
+      <tr><th></th><th><input type="text" class="filter-input" data-col="tglDisplay" onkeyup="handleColumnFilter()"></th><th><input type="text" class="filter-input" data-col="pemberiHTML" onkeyup="handleColumnFilter()"></th><th><input type="text" class="filter-input" data-col="penerimaHTML" onkeyup="handleColumnFilter()"></th><th><input type="text" class="filter-input" data-col="unitPenerima" onkeyup="handleColumnFilter()"></th><th><input type="text" class="filter-input" data-col="barangDisplay" onkeyup="handleColumnFilter()"></th><th><input type="text" class="filter-input" data-col="pembuat" onkeyup="handleColumnFilter()"></th><th></th></tr>`;
+    } else if (currentMenu === 'Tanda_Terima_Lainnya') {
+      headEl.innerHTML = `<tr><th width="3%"><input type="checkbox" id="checkAll" onchange="toggleAllChecks(this)"></th><th width="10%">Tanggal</th><th width="10%">Ket</th><th width="15%">Yang Menyerahkan</th><th width="15%">Yang Menerima</th><th width="15%">Barang & Jumlah</th><th width="12%">Tujuan Penyerahan</th><th width="12%">Pembuat</th><th width="8%">Aksi</th></tr>
+      <tr><th></th><th><input type="text" class="filter-input" data-col="tglDisplay" onkeyup="handleColumnFilter()"></th><th><input type="text" class="filter-input" data-col="keterangan" onkeyup="handleColumnFilter()"></th><th><input type="text" class="filter-input" data-col="penyerahHTML" onkeyup="handleColumnFilter()"></th><th><input type="text" class="filter-input" data-col="penerimaHTML" onkeyup="handleColumnFilter()"></th><th><input type="text" class="filter-input" data-col="barangTeks" onkeyup="handleColumnFilter()"></th><th><input type="text" class="filter-input" data-col="tujuan" onkeyup="handleColumnFilter()"></th><th><input type="text" class="filter-input" data-col="pembuat" onkeyup="handleColumnFilter()"></th><th></th></tr>`;
+    } else {
+      headEl.innerHTML = `<tr><th width="3%"><input type="checkbox" id="checkAll" onchange="toggleAllChecks(this)"></th><th width="10%">Tanggal</th><th width="15%">Yang Menyerahkan</th><th width="15%">Penerima</th><th width="20%">Nama Barang</th><th width="15%">Kode BMN</th><th width="5%">Jumlah</th><th width="10%">Pembuat</th><th width="7%">Aksi</th></tr>
+      <tr><th></th><th><input type="text" class="filter-input" data-col="tglDisplay" onkeyup="handleColumnFilter()"></th><th><input type="text" class="filter-input" data-col="penyerah" onkeyup="handleColumnFilter()"></th><th><input type="text" class="filter-input" data-col="penerima" onkeyup="handleColumnFilter()"></th><th><input type="text" class="filter-input" data-col="barangDisplay" onkeyup="handleColumnFilter()"></th><th><input type="text" class="filter-input" data-col="kodeDisplay" onkeyup="handleColumnFilter()"></th><th></th><th><input type="text" class="filter-input" data-col="pembuat" onkeyup="handleColumnFilter()"></th><th></th></tr>`;
+    }
+
+    tbody.innerHTML = '<tr><td colspan="10" class="text-center py-3"><div class="spinner-border spinner-border-sm text-primary"></div> Memuat data...</td></tr>';
+    
+    google.script.run.withSuccessHandler(data => {
+        data.forEach(row => {
+            const raw = JSON.parse(row.fullData);
+            if (currentMenu === 'BAST_Kendaraan_Dinas') {
+                 let items = JSON.parse(raw[15] || '[]');
+                 row.jenisKendaraan = items[0] ? items[0].nama : '';
+                 row.nomorPolisi = items[0] ? items[0].kode : '';
+                 row.penyerahHTML = `<b>${raw[2]}</b><br><small class="text-muted">${raw[4]}</small>`;
+                 row.penerimaHTML = `<b>${raw[6]}</b><br><small class="text-muted">${raw[8]}</small>`;
+            } else if (currentMenu === 'Memo_Perintah') {
+                 row.pemberiHTML = `<b>${raw[2]}</b><br><small class="text-muted">${raw[4]}</small>`;
+                 row.penerimaHTML = `<b>${raw[6]}</b><br><small class="text-muted">${raw[8]}</small>`;
+                 row.unitPenerima = raw[9];
+                 row.barangDisplay = row.items;
+            } else if (currentMenu === 'Tanda_Terima_Lainnya') {
+                 let items = JSON.parse(raw[15] || '[]');
+                 row.penyerahHTML = `<b>${raw[2]}</b><br><small class="text-muted">${raw[4]}</small>`;
+                 row.penerimaHTML = `<b>${raw[6]}</b><br><small class="text-muted">${raw[8]}</small>`;
+                 row.keterangan = `<span class="badge bg-info">${raw[5]}</span>`;
+                 row.barangTeks = items[0] ? `${items[0].nama} (${items[0].total} ${raw[16]})` : '';
+                 row.tujuan = raw[9]; 
+            } else {
+                 row.barangDisplay = row.items;
+                 row.kodeDisplay = row.items;
+            }
+        });
+        allTableData = data; filteredData = data; currentPage = 1; renderTable(); 
+    }).getHistoryData(currentMenu);
+  }
+
+  function handleColumnFilter() {
+    const inputs = document.querySelectorAll('.filter-input');
+    filteredData = allTableData.filter(row => {
+        let isMatch = true; 
+        inputs.forEach(input => {
+            const colKey = input.getAttribute('data-col'); 
+            const searchText = input.value.toLowerCase().trim();
+            if (!searchText) return;
+            let cellData = row[colKey];
+            if (!cellData) cellData = ''; else cellData = cellData.toString().toLowerCase();
+            const cleanData = cellData.replace(/<[^>]*>?/gm, '');
+            if (!cleanData.includes(searchText)) isMatch = false;
+        });
+        return isMatch;
+    });
+    currentPage = 1; renderTable();
+  }
+
+  function renderTable() {
+    const tbody = document.querySelector('#dataTable tbody');
+    tbody.innerHTML = '';
+    if(filteredData.length === 0) { 
+        tbody.innerHTML = '<tr><td colspan="10" class="text-center">Data tidak ditemukan.</td></tr>'; 
+        document.getElementById('page-info').innerText = '0 data'; 
+        return; 
+    }
+    
+    const start = (currentPage - 1) * rowsPerPage; 
+    const end = start + rowsPerPage;
+    const pageData = filteredData.slice(start, end);
+
+    pageData.forEach(row => {
+      const tr = document.createElement('tr');
+      
+      if (currentMenu === 'BAST_Kendaraan_Dinas') {
+          let btnAksiKendaraan = `<div class="d-flex gap-1 justify-content-center"><button onclick="loadEditKendaraanById('${row.id}')" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></button><button onclick="deleteData('${row.id}')" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button><a href="${row.url}" target="_blank" class="btn btn-sm btn-primary"><i class="bi bi-file-pdf"></i></a></div>`;
+          tr.innerHTML = `<td class="text-center"><input type="checkbox" class="row-check" value="${row.id}" onchange="checkBulkStatus()"></td><td>${row.tglDisplay}</td><td>${row.penyerahHTML}</td><td>${row.penerimaHTML}</td><td>${row.jenisKendaraan}</td><td style="font-family: monospace;"><b>${row.nomorPolisi}</b></td><td>${row.pembuat}</td><td class="text-center">${btnAksiKendaraan}</td>`;
+      
+      } else if (currentMenu === 'Memo_Perintah') {
+          let btnAksiMemo = `<div class="d-flex gap-1 justify-content-center"><button onclick="loadEditMemoById('${row.id}')" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></button><button onclick="deleteData('${row.id}')" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button><a href="${row.url}" target="_blank" class="btn btn-sm btn-primary"><i class="bi bi-file-pdf"></i></a></div>`;
+          let items = []; 
+          try { items = JSON.parse(row.items); } catch (e) {}
+          let innerTable = `<table class="table table-borderless table-sm mb-0">`;
+          items.forEach((it, idx) => {
+              let kodeHtml = `<div class="text-break">${it.kode}</div>`;
+              if (it.details && it.details.length > 0) kodeHtml += `<div class="mt-1">` + it.details.map(d => `<small class="d-block text-muted">&bull; ${d.nup}</small>`).join('') + `</div>`;
+              let borderStyle = (idx === items.length - 1) ? '' : 'border-bottom: 1px dashed #e0e0e0;';
+              innerTable += `<tr style="${borderStyle}"><td width="50%">${it.nama}</td><td width="35%" style="font-family: monospace;">${kodeHtml}</td><td width="15%" class="text-center">${it.total}</td></tr>`;
+          }); 
+          innerTable += `</table>`;
+          tr.innerHTML = `<td class="text-center"><input type="checkbox" class="row-check" value="${row.id}" onchange="checkBulkStatus()"></td><td>${row.tglDisplay}</td><td>${row.pemberiHTML}</td><td>${row.penerimaHTML}</td><td>${row.unitPenerima}</td><td style="padding: 0;">${innerTable}</td><td>${row.pembuat}</td><td class="text-center">${btnAksiMemo}</td>`;
+      
+      } else if (currentMenu === 'Tanda_Terima_Lainnya') {
+          let btnAksiTT = `<div class="d-flex gap-1 justify-content-center"><button onclick="loadEditTTById('${row.id}')" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></button><button onclick="deleteData('${row.id}')" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button><a href="${row.url}" target="_blank" class="btn btn-sm btn-primary"><i class="bi bi-file-pdf"></i></a></div>`;
+          tr.innerHTML = `<td class="text-center"><input type="checkbox" class="row-check" value="${row.id}" onchange="checkBulkStatus()"></td><td>${row.tglDisplay}</td><td class="text-center">${row.keterangan}</td><td>${row.penyerahHTML}</td><td>${row.penerimaHTML}</td><td>${row.barangTeks}</td><td>${row.tujuan}</td><td>${row.pembuat}</td><td class="text-center">${btnAksiTT}</td>`;
+      
+      } else {
+          let btnAksiLama = `<div class="d-flex gap-1 justify-content-center"><button onclick="loadEditById('${row.id}')" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></button><button onclick="deleteData('${row.id}')" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button><a href="${row.url}" target="_blank" class="btn btn-sm btn-primary"><i class="bi bi-file-pdf"></i></a></div>`;
+          let items = []; 
+          try { items = JSON.parse(row.items); } catch (e) {}
+          let innerTable = `<table class="table table-borderless table-sm mb-0">`;
+          items.forEach((it, idx) => {
+              let kodeHtml = `<div class="text-break">${it.kode}</div>`;
+              if (it.details && it.details.length > 0) kodeHtml += `<div class="mt-1">` + it.details.map(d => `<small class="d-block text-muted">&bull; ${d.nup} (${d.kondisi})</small>`).join('') + `</div>`;
+              let borderStyle = (idx === items.length - 1) ? '' : 'border-bottom: 1px dashed #e0e0e0;';
+              innerTable += `<tr style="${borderStyle}"><td width="45%">${it.nama}</td><td width="40%" style="font-family: monospace;">${kodeHtml}</td><td width="15%" class="text-center">${it.total}</td></tr>`;
+          }); 
+          innerTable += `</table>`;
+          tr.innerHTML = `<td class="text-center"><input type="checkbox" class="row-check" value="${row.id}" onchange="checkBulkStatus()"></td><td>${row.tglDisplay}</td><td>${row.penyerah}</td><td>${row.penerima}</td><td colspan="3" style="padding: 0;">${innerTable}</td><td>${row.pembuat}</td><td class="text-center">${btnAksiLama}</td>`;
+      }
+      
+      tbody.appendChild(tr);
+    });
+    
+    document.getElementById('curr-page-num').innerText = currentPage;
+    document.getElementById('page-info').innerText = `Menampilkan ${start+1}-${Math.min(end, filteredData.length)} dari ${filteredData.length} data`;
+    document.getElementById('checkAll').checked = false; 
+    checkBulkStatus();
+  }
+
+  function changePage(direction) {
+    const maxPage = Math.ceil(filteredData.length / rowsPerPage);
+    const newPage = currentPage + direction;
+    if(newPage > 0 && newPage <= maxPage) { currentPage = newPage; renderTable(); }
+  }
+
+  function toggleAllChecks(source) {
+    document.querySelectorAll('.row-check').forEach(c => c.checked = source.checked);
+    checkBulkStatus();
+  }
+  function checkBulkStatus() {
+    const checked = document.querySelectorAll('.row-check:checked').length;
+    document.getElementById('btn-bulk-delete').classList.toggle('d-none', checked === 0);
+  }
+  function handleBulkDelete() {
+    const checkboxes = document.querySelectorAll('.row-check:checked');
+    const ids = Array.from(checkboxes).map(c => c.value);
+    Swal.fire({
+      title: `Hapus ${ids.length} data?`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Ya'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        loader(true);
+        google.script.run.withSuccessHandler(msg => {
+          loader(false); Swal.fire('Deleted', msg, 'success'); fetchTableData();
+        }).deleteBulkData(ids, currentMenu);
+      }
+    });
+  }
+  function deleteData(id) {
+    Swal.fire({
+      title: 'Hapus Data?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Ya'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        loader(true);
+        google.script.run.withSuccessHandler(msg => {
+          loader(false); Swal.fire('Deleted', msg, 'success'); fetchTableData();
+        }).deleteData(id, currentMenu);
+      }
+    });
+  }
+  function generateRecapPDF() {
+    loader(true);
+    google.script.run.withSuccessHandler(url => {
+        loader(false); window.open(url, '_blank');
+    }).generateRecapPDF(currentMenu);
+  }
+
+  function loadEdit(rowData) {
+    toggleTable(false);
+    document.getElementById('edit-id').value = rowData[0];
+    document.getElementById('btn-submit').innerHTML = '<i class="bi bi-pencil-square"></i> PERBARUI DATA';
+    document.getElementById('btn-submit').classList.replace('btn-primary', 'btn-warning');
+    document.getElementById('btn-cancel-edit').classList.remove('d-none');
+    
+    if(rowData[17] === 'Tanda_Terima') {
+        document.getElementById('jd_tt').checked = true;
+    } else {
+        document.getElementById('jd_bast').checked = true;
+    }
+
+    const d = new Date(rowData[1]);
+    const dStr = `${d.getFullYear()}-${("0" + (d.getMonth() + 1)).slice(-2)}-${("0" + d.getDate()).slice(-2)}`;
+    document.getElementById('tglInput').value = dStr;
+    updateDateDisplay(dStr);
+
+    document.getElementById('p1-nama').value = rowData[2];
+    document.getElementById('p1-nip').value = rowData[3];
+    document.getElementById('p1-jabatan').value = rowData[4];
+    document.getElementById('p1-unit').value = rowData[5];
+    document.getElementById('p2-nama').value = rowData[6];
+    document.getElementById('p2-nip').value = rowData[7];
+    document.getElementById('p2-jabatan').value = rowData[8];
+    document.getElementById('p2-unit').value = rowData[9];
+
+    if(rowData[16]) {
+      const m = JSON.parse(rowData[16]);
+      document.getElementById('checkM').checked = true;
+      document.getElementById('m-area').classList.remove('d-none');
+      document.getElementById('m-nama').value = m.nama;
+      document.getElementById('m-nip').value = m.nip;
+      document.getElementById('m-jab').value = m.jab;
+    } else {
+      document.getElementById('checkM').checked = false;
+      document.getElementById('m-area').classList.add('d-none');
+    }
+
+    const container = document.getElementById('item-container');
+    container.innerHTML = ''; 
+    const items = JSON.parse(rowData[15]);
+    items.forEach(item => {
+      const idx = Date.now() + Math.random();
+      const div = document.createElement('div');
+      div.innerHTML = createItemBlockHTML(idx);
+      container.appendChild(div.firstElementChild);
+      const block = document.getElementById(`item-block-${idx}`);
+      block.querySelector('.item-nama').value = item.nama;
+      block.querySelector('.item-kode').value = item.kode;
+      const detailContainer = document.getElementById(`details-${idx}`);
+      detailContainer.innerHTML = '';
+      item.details.forEach(det => {
+          const detDiv = document.createElement('div');
+          detDiv.innerHTML = createDetailRowHTML(idx);
+          detailContainer.appendChild(detDiv.firstElementChild);
+          const rows = detailContainer.querySelectorAll('.detail-row');
+          const lastRow = rows[rows.length-1];
+          lastRow.querySelector('.detail-nup').value = det.nup;
+          lastRow.querySelector('.detail-kondisi').value = det.kondisi;
+      });
+      updateTotal(idx);
+    });
+  }
+
+  function loadUserTable() {
+      const tbody = document.getElementById('userTableBody');
+      tbody.innerHTML = '<tr><td colspan="4">Loading...</td></tr>';
+      google.script.run.withSuccessHandler(users => {
+          tbody.innerHTML = '';
+          users.forEach(u => {
+              const tr = document.createElement('tr');
+              tr.innerHTML = `<td>${u.username}</td><td>${u.nama}</td><td>${u.role}</td>
+                  <td><button class="btn btn-sm btn-warning" onclick="editUser(${u.row}, '${u.username}', '${u.nama}', '${u.role}')"><i class="bi bi-pencil"></i></button>
+                  <button class="btn btn-sm btn-danger" onclick="deleteUser(${u.row})"><i class="bi bi-trash"></i></button></td>`;
+              tbody.appendChild(tr);
+          });
+      }).getUsersList();
+  }
+
+  function saveUser() {
+      const u = document.getElementById('u-new').value;
+      const p = document.getElementById('p-new').value;
+      const n = document.getElementById('n-new').value;
+      const r = document.getElementById('r-new').value;
+      const row = document.getElementById('u-row-edit').value;
+      
+      if(!u || (!p && !row) || !n) {
+        return Swal.fire('Error', 'Username, Nama, dan Password (untuk user baru) wajib diisi', 'error');
+      }
+
+      loader(true);
+      const handler = () => { loader(false); loadUserTable(); resetUserForm(); };
+      row ? google.script.run.withSuccessHandler(handler).updateUser(row, u, p, n, r)
+          : google.script.run.withSuccessHandler(handler).saveNewUser(u, p, n, r);
+  }
+
+  function editUser(row, u, n, r) {
+      document.getElementById('u-row-edit').value = row;
+      document.getElementById('u-new').value = u;
+      document.getElementById('p-new').value = ''; 
+      document.getElementById('p-new').placeholder = 'Kosongkan jika tak ubah sandi';
+      document.getElementById('n-new').value = n;
+      document.getElementById('r-new').value = r;
+  }
+
+  function resetUserForm() {
+      document.getElementById('u-row-edit').value = '';
+      document.getElementById('u-new').value = ''; 
+      document.getElementById('p-new').value = '';
+      document.getElementById('p-new').placeholder = 'Password';
+      document.getElementById('n-new').value = ''; 
+      document.getElementById('r-new').value = 'STAFF';
+  }
+  function deleteUser(row) {
+      if(confirm('Hapus?')) { loader(true); google.script.run.withSuccessHandler(() => { loader(false); loadUserTable(); }).deleteUser(row); }
+  }
+
+  function toggleAppStatus(checkbox) {
+    const isActive = checkbox.checked;
+    
+    if (!isActive) {
+      Swal.fire({
+        title: 'Nonaktifkan Sistem?',
+        text: 'User STAFF tidak akan bisa login. Masukkan pesan peringatan:',
+        input: 'textarea',
+        inputPlaceholder: 'Contoh: Sistem sedang maintenance...',
+        showCancelButton: true,
+        confirmButtonText: 'Nonaktifkan',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#dc3545',
+        preConfirm: (msg) => { return msg || 'Mohon maaf, sistem sedang dalam perbaikan rutin.'; }
+      }).then((res) => {
+        if (res.isConfirmed) {
+          updateAppStatusBackend(false, res.value, checkbox);
+        } else {
+          checkbox.checked = true; 
+        }
+      });
+    } else {
+      Swal.fire({
+        title: 'Aktifkan Sistem?',
+        text: 'Sistem akan dibuka untuk semua user.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#198754',
+        confirmButtonText: 'Ya, Aktifkan',
+      }).then((res) => {
+        if (res.isConfirmed) {
+           updateAppStatusBackend(true, '', checkbox);
+        } else {
+           checkbox.checked = false; 
+        }
+      });
+    }
+  }
+
+  function updateAppStatusBackend(isActive, msg, checkbox) {
+    loader(true); 
+    google.script.run.withSuccessHandler(r => {
+      loader(false);
+      if(r.status === 'success') {
+         Swal.fire({toast:true, position:'top-end', icon:'success', title: r.message, showConfirmButton:false, timer:3000});
+      }
+    }).withFailureHandler(e => {
+      loader(false);
+      Swal.fire('Error', e.message, 'error');
+      checkbox.checked = !isActive; 
+    }).setAppStatus(isActive, msg);
+  }
+
+function loadDriveFiles() {
+  const tbody = document.getElementById('driveTableBody');
+  tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4"><div class="spinner-border spinner-border-sm text-primary me-2"></div> Memindai folder Google Drive...</td></tr>';
+  
+  document.getElementById('checkAllDrive').checked = false;
+  checkBulkDriveStatus();
+
+  google.script.run.withSuccessHandler(files => {
+    tbody.innerHTML = '';
+    if(files.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" class="text-center py-3">Tidak ada file PDF di dalam Drive.</td></tr>';
+      return;
+    }
+    
+    files.forEach((f, idx) => {
+      const badgeClass = f.type === 'Rekapitulasi' ? 'bg-success' : 'bg-primary';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="text-center">
+          <input type="checkbox" class="drive-row-check" value="${f.id}" onchange="checkBulkDriveStatus()">
+        </td>
+        <td class="text-center">${idx + 1}</td>
+        <td><a href="${f.url}" target="_blank" class="text-decoration-none fw-bold" style="color: var(--primary-blue);">${f.name}</a></td>
+        <td class="text-center"><span class="badge ${badgeClass}">${f.type}</span></td>
+        <td class="text-center">${f.dateDisplay}</td>
+        <td class="text-center">${f.size}</td>
+        <td class="text-center">
+          <a href="${f.url}" target="_blank" class="btn btn-sm btn-info text-white me-1"><i class="bi bi-eye"></i></a>
+          <button class="btn btn-sm btn-danger" onclick="deleteDriveFileUi('${f.id}', '${f.name}')"><i class="bi bi-trash"></i></button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }).getDriveFiles();
+}
+function toggleAllDriveChecks(source) {
+  document.querySelectorAll('.drive-row-check').forEach(c => c.checked = source.checked);
+  checkBulkDriveStatus();
+}
+
+function checkBulkDriveStatus() {
+  const checkedCount = document.querySelectorAll('.drive-row-check:checked').length;
+  document.getElementById('btn-bulk-drive-delete').classList.toggle('d-none', checkedCount === 0);
+}
+
+function handleBulkDriveDelete() {
+  const checkboxes = document.querySelectorAll('.drive-row-check:checked');
+  const fileIds = Array.from(checkboxes).map(c => c.value);
+  
+  Swal.fire({
+    title: `Hapus ${fileIds.length} File PDF?`,
+    html: `<span class="text-danger small">Hati-hati: File akan dimasukkan ke kotak sampah Drive dan jika dokumen ini masih terdata di Menu Riwayat, maka link-nya tidak akan bisa dibuka lagi.</span>`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    confirmButtonText: 'Ya, Hapus Terpilih'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      loader(true);
+      google.script.run.withSuccessHandler(res => {
+        loader(false);
+        if (res.status === 'success' || res.status === 'partial') {
+          Swal.fire('Terhapus', res.message, res.status === 'success' ? 'success' : 'warning');
+          loadDriveFiles(); 
+        } else {
+          Swal.fire('Gagal', res.message, 'error');
+        }
+      }).deleteBulkDriveFiles(fileIds);
+    }
+  });
+}
+
+function deleteDriveFileUi(fileId, fileName) {
+  Swal.fire({
+    title: 'Hapus PDF Permanen?',
+    html: `Anda akan menghapus file:<br><b>${fileName}</b><br><br><span class="text-danger small">Hati-hati: Jika file ini masih terhubung di Riwayat Dokumen, link-nya tidak akan bisa dibuka lagi (File Not Found).</span>`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    confirmButtonText: 'Ya, Hapus File'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      loader(true);
+      google.script.run.withSuccessHandler(res => {
+        loader(false);
+        if(res.status === 'success') {
+          Swal.fire({toast:true, position:'top-end', icon:'success', title: res.message, showConfirmButton:false, timer:3000});
+          loadDriveFiles(); 
+        } else {
+          Swal.fire('Gagal', res.message, 'error');
+        }
+      }).deleteDriveFile(fileId);
+    }
+  });
+}
+
+function addMemoItemBlock() {
+  const idx = 'M' + Date.now(); 
+  const div = document.createElement('div');
+  div.innerHTML = createItemBlockHTML(idx);
+  document.getElementById('memo-item-container').appendChild(div.firstElementChild);
+  addDetailRow(idx);
+}
+
+function submitDocTemplate(menuType) {
+  let payload = {};
+  if (menuType === 'Memo_Perintah') {
+    payload = {
+      nama_pemberi: document.getElementById('memo-p1-nama').value, nip_pemberi: document.getElementById('memo-p1-nip').value, jab_pemberi: document.getElementById('memo-p1-jabatan').value,
+      nama_penerima: document.getElementById('memo-p2-nama').value, jab_penerima: document.getElementById('memo-p2-jabatan').value, unit_penerima: document.getElementById('memo-p2-unit').value,
+      arahan: document.getElementById('memo-arahan').value, // FIELD BARU
+      keperluan: document.getElementById('memo-keperluan').value, // FIELD BARU
+      satuan: 'Unit', items: []
+    };
+    document.getElementById('memo-item-container').querySelectorAll('.item-card').forEach(block => {
+      const item = { nama: block.querySelector('.item-nama').value, kode: block.querySelector('.item-kode').value, total: block.querySelector('.item-total').value, details: [] };
+      block.querySelectorAll('.detail-row').forEach(row => { item.details.push({ nup: row.querySelector('.detail-nup').value, kondisi: row.querySelector('.detail-kondisi').value }); });
+      payload.items.push(item);
+    });
+    if(!payload.nama_pemberi || payload.items.length === 0) return Swal.fire('Oops', 'Data Memo atau Barang kosong!', 'warning');
+    
+  } else if (menuType === 'Tanda_Terima_Lainnya') {
+    payload = {
+      tanggalInput: document.getElementById('tt-tgl').value, status_dok: document.querySelector('input[name="tt-status"]:checked').value,
+      nama_barang: document.getElementById('tt-brg').value, jumlah: document.getElementById('tt-jml').value, satuan: document.getElementById('tt-sat').value, keperluan: document.getElementById('tt-kep').value,
+      nama_p1_1: document.getElementById('tt-p1-1-nama').value, nip_p1_1: document.getElementById('tt-p1-1-nip').value, jab_p1_1: document.getElementById('tt-p1-1-jabatan').value,
+      nama_p2_1: document.getElementById('tt-p2-1-nama').value, nip_p2_1: document.getElementById('tt-p2-1-nip').value, jab_p2_1: document.getElementById('tt-p2-1-jabatan').value
+    };
+    if(!payload.tanggalInput || !payload.nama_barang || !payload.nama_p1_1 || !payload.nama_p2_1) return Swal.fire('Oops', 'Tanggal, Barang, dan Nama wajib diisi!', 'warning');
+    
+  } else if (menuType === 'BAST_Kendaraan_Dinas') {
+    payload = {
+      tanggalInput: document.getElementById('kend-tgl').value, jenis_kendaraan: document.getElementById('kend-jenis').value, kondisi: document.getElementById('kend-kondisi').value,
+      kode_depan: document.getElementById('kend-plat1').value, nomor: document.getElementById('kend-plat2').value, kode_belakang: document.getElementById('kend-plat3').value,
+      nama_p1_1: document.getElementById('kend-p1-1-nama').value, nip_p1_1: document.getElementById('kend-p1-1-nip').value, jab_p1_1: document.getElementById('kend-p1-1-jabatan').value,
+      nama_p2_1: document.getElementById('kend-p2-1-nama').value, nip_p2_1: document.getElementById('kend-p2-1-nip').value, jab_p2_1: document.getElementById('kend-p2-1-jabatan').value
+    };
+    if(!payload.tanggalInput || !payload.nomor || !payload.nama_p1_1 || !payload.nama_p2_1) return Swal.fire('Oops', 'Tanggal, Plat Nomor, dan Nama wajib diisi!', 'warning');
+  }
+
+  const editId = document.getElementById('edit-id').value;
+
+  loader(true);
+  google.script.run.withSuccessHandler(res => {
+    loader(false);
+    if(res.status === 'success') {
+      Swal.fire({ 
+        title: 'Sukses!', 
+        text: res.message, 
+        icon: 'success', 
+        showCancelButton: true, 
+        confirmButtonText: 'Buka PDF' 
+      }).then((r) => { 
+        if (r.isConfirmed) window.open(res.url, '_blank'); 
+      });
+
+      // --- TAMBAHKAN BARIS INI UNTUK MENGOSONGKAN FORM ---
+      resetAllTemplateForms();
+      // --------------------------------------------------
+
+      if(document.getElementById('history-container').classList.contains('d-block')) { 
+        fetchTableData(); 
+      }
+    } else { 
+      Swal.fire('Gagal', res.message, 'error'); 
+    }
+  }).processDokumenDariTemplate(menuType, payload, userSession.nama, editId || null);
+}
+
+function loadEditMemoById(id) {
+    const rowObj = allTableData.find(r => r.id === id);
+    if (!rowObj) return;
+    const rowData = JSON.parse(rowObj.fullData);
+    
+    toggleTable(false); 
+    document.getElementById('edit-id').value = rowData[0]; 
+    
+    document.getElementById('memo-p1-nama').value = rowData[2] || '';
+    document.getElementById('memo-p1-nip').value = rowData[3] || '';
+    document.getElementById('memo-p1-jabatan').value = rowData[4] || '';
+    
+    document.getElementById('memo-p2-nama').value = rowData[6] || '';
+    document.getElementById('memo-p2-jabatan').value = rowData[8] || '';
+    document.getElementById('memo-p2-unit').value = rowData[9] || '';
+    let ketMemo = {};
+    try { ketMemo = JSON.parse(rowData[16] || '{}'); } catch(e) {}
+    document.getElementById('memo-arahan').value = ketMemo.arahan || '';
+    document.getElementById('memo-keperluan').value = ketMemo.keperluan || '';
+
+    const container = document.getElementById('memo-item-container');
+    container.innerHTML = ''; 
+    let items = [];
+    try { items = JSON.parse(rowData[15] || '[]'); } catch(e) {}
+    
+    items.forEach((item, index) => {
+        const idx = 'M' + Date.now() + index;
+        const div = document.createElement('div');
+        div.innerHTML = createItemBlockHTML(idx);
+        container.appendChild(div.firstElementChild);
+        
+        const block = document.getElementById(`item-block-${idx}`);
+        block.querySelector('.item-nama').value = item.nama || '';
+        block.querySelector('.item-kode').value = item.kode || '';
+        
+        const detailContainer = document.getElementById(`details-${idx}`);
+        detailContainer.innerHTML = '';
+        
+        if (item.details && item.details.length > 0) {
+            item.details.forEach(det => {
+                const detDiv = document.createElement('div');
+                detDiv.innerHTML = createDetailRowHTML(idx);
+                detailContainer.appendChild(detDiv.firstElementChild);
+                const rows = detailContainer.querySelectorAll('.detail-row');
+                const lastRow = rows[rows.length-1];
+                lastRow.querySelector('.detail-nup').value = det.nup || '';
+                lastRow.querySelector('.detail-kondisi').value = det.kondisi || '';
+            });
+        }
+        updateTotal(idx);
+    });
+    
+    const btnSubmit = document.querySelector('#view-memo-form .btn-primary');
+    if(btnSubmit) {
+        btnSubmit.innerHTML = '<i class="bi bi-pencil-square"></i> PERBARUI MEMO';
+        btnSubmit.classList.replace('btn-primary', 'btn-warning');
+    }
+}
+
+function loadEditById(id) {
+    const rowObj = allTableData.find(r => r.id === id);
+    if (!rowObj) return;
+    const rowData = JSON.parse(rowObj.fullData);
+    loadEdit(rowData); 
+}
+
+function loadEditTTById(id) {
+    const rowObj = allTableData.find(r => r.id === id);
+    if (!rowObj) return;
+    const rowData = JSON.parse(rowObj.fullData);
+
+    toggleTable(false); 
+    document.getElementById('edit-id').value = rowData[0];
+
+    const d = new Date(rowData[1]);
+    const dStr = `${d.getFullYear()}-${("0" + (d.getMonth() + 1)).slice(-2)}-${("0" + d.getDate()).slice(-2)}`;
+    document.getElementById('tt-tgl').value = dStr;
+
+    document.getElementById('tt-p1-1-nama').value = rowData[2] || '';
+    document.getElementById('tt-p1-1-nip').value = rowData[3] || '';
+    document.getElementById('tt-p1-1-jabatan').value = rowData[4] || '';
+    document.getElementById('tt-p2-1-nama').value = rowData[6] || '';
+    document.getElementById('tt-p2-1-nip').value = rowData[7] || '';
+    document.getElementById('tt-p2-1-jabatan').value = rowData[8] || '';
+
+    if(rowData[5] === 'diterima') {
+        document.querySelector('input[name="tt-status"][value="diterima"]').checked = true;
+    } else {
+        document.querySelector('input[name="tt-status"][value="diserahkan"]').checked = true;
+    }
+
+    document.getElementById('tt-kep').value = rowData[9] || '';
+    document.getElementById('tt-sat').value = rowData[16] || '';
+
+    let items = [];
+    try { items = JSON.parse(rowData[15] || '[]'); } catch(e) {}
+    if(items.length > 0) {
+        document.getElementById('tt-brg').value = items[0].nama || '';
+        document.getElementById('tt-jml').value = items[0].total || '';
+    }
+
+    const btnSubmit = document.querySelector('#view-tt-lainnya-form .btn-primary');
+    if(btnSubmit) {
+        btnSubmit.innerHTML = '<i class="bi bi-pencil-square"></i> PERBARUI DATA';
+        btnSubmit.classList.replace('btn-primary', 'btn-warning');
+    }
+}
+
+function loadEditKendaraanById(id) {
+    const rowObj = allTableData.find(r => r.id === id);
+    if (!rowObj) return;
+    const rowData = JSON.parse(rowObj.fullData);
+
+    toggleTable(false); 
+    document.getElementById('edit-id').value = rowData[0];
+
+    const d = new Date(rowData[1]);
+    const dStr = `${d.getFullYear()}-${("0" + (d.getMonth() + 1)).slice(-2)}-${("0" + d.getDate()).slice(-2)}`;
+    document.getElementById('kend-tgl').value = dStr;
+
+    document.getElementById('kend-p1-1-nama').value = rowData[2] || '';
+    document.getElementById('kend-p1-1-nip').value = rowData[3] || '';
+    document.getElementById('kend-p1-1-jabatan').value = rowData[4] || '';
+    document.getElementById('kend-p2-1-nama').value = rowData[6] || '';
+    document.getElementById('kend-p2-1-nip').value = rowData[7] || '';
+    document.getElementById('kend-p2-1-jabatan').value = rowData[8] || '';
+
+    let items = [];
+    try { items = JSON.parse(rowData[15] || '[]'); } catch(e) {}
+    if(items.length > 0) {
+        document.getElementById('kend-jenis').value = items[0].nama || '';
+        const platParts = (items[0].kode || '').split(' ');
+        document.getElementById('kend-plat1').value = platParts[0] || '';
+        document.getElementById('kend-plat2').value = platParts[1] || '';
+        document.getElementById('kend-plat3').value = platParts[2] || '';
+        if (items[0].details && items[0].details.length > 0) {
+            document.getElementById('kend-kondisi').value = items[0].details[0].kondisi || '';
+        }
+    }
+
+    const btnSubmit = document.querySelector('#view-kendaraan-form .btn-primary');
+    if(btnSubmit) {
+        btnSubmit.innerHTML = '<i class="bi bi-pencil-square"></i> PERBARUI KENDARAAN';
+        btnSubmit.classList.replace('btn-primary', 'btn-warning');
+    }
+}
+// Fungsi untuk mengosongkan semua form template (Memo, Tanda Terima, Kendaraan)
+function resetAllTemplateForms() {
+  // 1. Reset Form Memo Perintah
+  const memoFields = ['memo-p1-nama', 'memo-p1-nip', 'memo-p1-jabatan', 'memo-p2-nama', 'memo-p2-jabatan', 'memo-p2-unit', 'memo-arahan', 'memo-keperluan'];
+  memoFields.forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = ''; });
+  document.getElementById('memo-item-container').innerHTML = '';
+  
+  // Kembalikan Tombol Memo ke Biru
+  const btnMemo = document.querySelector('#view-memo-form .btn-warning, #view-memo-form .btn-primary');
+  if(btnMemo) {
+    btnMemo.innerHTML = '<i class="bi bi-save"></i> SIMPAN & CETAK MEMO';
+    btnMemo.classList.replace('btn-warning', 'btn-primary');
+  }
+
+  // 2. Reset Form Tanda Terima Lainnya
+  const ttFields = ['tt-tgl', 'tt-brg', 'tt-jml', 'tt-sat', 'tt-kep', 'tt-p1-1-nama', 'tt-p1-1-nip', 'tt-p1-1-jabatan', 'tt-p2-1-nama', 'tt-p2-1-nip', 'tt-p2-1-jabatan'];
+  ttFields.forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = ''; });
+  
+  // Kembalikan Tombol Tanda Terima ke Biru
+  const btnTT = document.querySelector('#view-tt-lainnya-form .btn-warning, #view-tt-lainnya-form .btn-primary');
+  if(btnTT) {
+    btnTT.innerHTML = '<i class="bi bi-save"></i> SIMPAN & CETAK TANDA TERIMA';
+    btnTT.classList.replace('btn-warning', 'btn-primary');
+  }
+
+  // 3. Reset Form BAST Kendaraan Dinas
+  const kendFields = ['kend-tgl', 'kend-jenis', 'kend-plat1', 'kend-plat2', 'kend-plat3', 'kend-kondisi', 'kend-p1-1-nama', 'kend-p1-1-nip', 'kend-p1-1-jabatan', 'kend-p2-1-nama', 'kend-p2-1-nip', 'kend-p2-1-jabatan'];
+  kendFields.forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = ''; });
+
+  // Kembalikan Tombol Kendaraan ke Biru
+  const btnKend = document.querySelector('#view-kendaraan-form .btn-warning, #view-kendaraan-form .btn-primary');
+  if(btnKend) {
+    btnKend.innerHTML = '<i class="bi bi-save"></i> SIMPAN & CETAK KENDARAAN';
+    btnKend.classList.replace('btn-warning', 'btn-primary');
+  }
+
+  // 4. Pastikan edit-id dikosongkan
+  document.getElementById('edit-id').value = '';
+}
+// ==========================================
+// ==========================================
+// ==========================================
+  // Variabel Global Chat
+  let chatPolling = null; 
+  let heartbeatPolling = null;
+  let activeChatUser = null; 
+  let listSemuaUser = [];
+  let isSendingChat = false; 
+
+  // --- TAMBAHAN BARU: Memori Lokal untuk Render Kilat ---
+  let lastUnreadMap = {}; 
+  let cachedMessagesPerUser = {}; 
+
+  const originalShowMainPage = showMainPage;
+  showMainPage = function(data) {
+    originalShowMainPage(data);
+    document.getElementById('chat-fab').style.display = 'flex';
+    if(data.role === 'ADMIN') document.getElementById('admin-monitor-btn').classList.remove('d-none');
+    
+    // Heartbeat ringan tiap 60 detik
+    google.script.run.updateHeartbeat(userSession.nama);
+    heartbeatPolling = setInterval(() => { if(userSession) google.script.run.updateHeartbeat(userSession.nama); }, 60000);
+    startChatPolling();
+  };
+
+  let isFetchingChat = false;
+
+  function startChatPolling() {
+    if (chatPolling) clearInterval(chatPolling);
+    fetchChatUpdates();
+    chatPolling = setInterval(fetchChatUpdates, 10000); // Cek tiap 10 detik agar GAS tidak overload
+  }
+
+  function toggleChatWindow() {
+    const widget = document.getElementById('chat-widget');
+    const fab = document.getElementById('chat-fab');
+    isSendingChat = false; 
+    
+    if (widget.classList.contains('open')) {
+      widget.classList.remove('open');
+      fab.style.display = 'flex';
+    } else {
+      widget.classList.add('open');
+      fab.style.display = 'none';
+      
+      if (!activeChatUser && listSemuaUser.length > 0) { 
+        renderContactList(lastUnreadMap); 
+      } else if (activeChatUser && cachedMessagesPerUser[activeChatUser]) {
+        renderChatRoom(cachedMessagesPerUser[activeChatUser]);
+      }
+      
+      fetchChatUpdates(); 
+    }
+  }
+
+  function fetchChatUpdates() {
+    if (!userSession || isSendingChat || isFetchingChat) return;
+    isFetchingChat = true;
+    google.script.run
+      .withSuccessHandler(res => {
+        isFetchingChat = false;
+        handleChatUpdates(res);
+      })
+      .withFailureHandler(err => {
+        isFetchingChat = false;
+        handleChatUpdates({ error: true, message: err.message });
+      })
+      .getChatUpdates(userSession.nama, activeChatUser);
+  }
+  function handleChatUpdates(res) {
+  if (!res || res.error) return;
+
+  let currentRoom = activeChatUser ? activeChatUser.trim() : null;
+  if (res.activeRoom !== currentRoom) return;
+
+  // Update daftar user dan unread badge secara ringan
+  if (res.userList) listSemuaUser = res.userList;
+  lastUnreadMap = res.contactsUnread || {};
+  
+  const badge = document.getElementById('chat-badge-main'); // [cite: 1677]
+  if (badge) {
+    badge.innerText = res.unreadTotal > 0 ? res.unreadTotal : '';
+    badge.style.display = res.unreadTotal > 0 ? 'block' : 'none';
+  }
+
+  if (!activeChatUser) {
+    renderContactList(lastUnreadMap);
+  } else {
+    const incomingMessages = res.messages || [];
+    const cacheKey = 'chat_cache_' + userSession.nama + '_' + activeChatUser;
+    
+    // --- SMART DIFFING: BANDINGKAN DATA LAMA VS BARU ---
+    // Gunakan stringify untuk deteksi perubahan super cepat
+    const currentDataStr = JSON.stringify(incomingMessages);
+    const lastDataStr = localStorage.getItem(cacheKey);
+
+    if (currentDataStr !== lastDataStr) {
+      // Hanya render jika ada pesan baru, status berubah (read), atau pesan dihapus
+      localStorage.setItem(cacheKey, currentDataStr);
+      cachedMessagesPerUser[activeChatUser] = incomingMessages;
+      renderChatRoom(incomingMessages); // [cite: 2815, 2908]
+    }
+  }
+}
+function renderAdminThreadList(threads) {
+  const container = document.getElementById('admin-monitor-area');
+  if (!container) return;
+  
+  container.innerHTML = '<h6 class="p-2 border-bottom small fw-bold">PANTAUAN SEMUA CHAT (ADMIN)</h6>';
+  threads.forEach(id => {
+    const div = document.createElement('div');
+    div.className = 'contact-item';
+    div.style.background = '#fff3cd'; // Warna beda untuk mode pantau
+    div.onclick = () => openChatRoom(id, true); // Buka dengan mode monitoring
+    div.innerHTML = `<i class="bi bi-eye-fill me-2"></i> Thread: ${id.replace('_', ' ↔️ ')}`;
+    container.appendChild(div);
+  });
+}
+
+  function renderContactList(unreadData) {
+    const body = document.getElementById('contact-list-body');
+    body.innerHTML = '';
+    listSemuaUser.forEach(u => {
+      const unreadCount = unreadData[u.nama] || 0;
+      const badgeHtml = unreadCount > 0 ? `<div class="contact-badge">${unreadCount}</div>` : '';
+      const statusColor = u.status === "Online" ? '#25D366' : '#667781';
+      
+      const div = document.createElement('div');
+      div.className = 'contact-item'; div.onclick = () => openChatRoom(u.nama);
+      div.innerHTML = `
+        <div class="d-flex align-items-center gap-3">
+          <div style="width:45px; height:45px; border-radius:50%; background:#dfe5e7; display:flex; justify-content:center; align-items:center; font-size:1.5rem; color:#fff;"><i class="bi bi-person-fill"></i></div>
+          <div class="d-flex flex-column"><div class="contact-name">${u.nama}</div><small style="font-size:0.75rem; color:${statusColor}; font-weight: 500;">${u.status}</small></div>
+        </div>${badgeHtml}
+      `;
+      body.appendChild(div);
+    });
+  }
+
+  function showContactList() {
+  activeChatUser = null; 
+  isSendingChat = false;
+  document.getElementById('view-contacts').classList.remove('hidden');
+  document.getElementById('view-chatroom').classList.add('hidden');
+  document.getElementById('btn-back-chat').classList.add('d-none');
+  document.getElementById('btn-clear-chat').classList.add('d-none');
+  document.getElementById('chat-header-text').innerText = "Pesan Internal";
+
+  // Render daftar kontak dari state terakhir agar instan
+  renderContactList(lastUnreadMap);
+  fetchChatUpdates();
+}
+
+  function openChatRoom(targetName) {
+  activeChatUser = targetName; 
+  isSendingChat = false;
+  
+  document.getElementById('view-contacts').classList.add('hidden');
+  document.getElementById('view-chatroom').classList.remove('hidden');
+  document.getElementById('btn-back-chat').classList.remove('d-none');
+
+  if (targetName === 'PANTAUAN_ADMIN') {
+    document.getElementById('chat-header-text').innerText = "Broadcast (Admin)";
+    document.getElementById('chat-input').placeholder = "Ketik pengumuman...";
+    document.getElementById('btn-clear-chat').classList.add('d-none');
+  } else {
+    document.getElementById('chat-header-text').innerText = targetName;
+    document.getElementById('chat-input').placeholder = "Ketik pesan...";
+    document.getElementById('btn-clear-chat').classList.remove('d-none');
+  }
+
+  document.getElementById('chat-footer-input').classList.remove('d-none');
+
+  // --- LOGIKA BUKA SUPER CEPAT ---
+  const cacheKey = 'chat_cache_' + userSession.nama + '_' + targetName;
+  const localData = localStorage.getItem(cacheKey);
+
+  if (localData) {
+    // Jika ada cache di localStorage, langsung tampilkan (Instan!)
+    const parsedData = JSON.parse(localData);
+    cachedMessagesPerUser[targetName] = parsedData;
+    renderChatRoom(parsedData);
+  } else if (cachedMessagesPerUser[targetName]) {
+    // Jika tidak ada di localStorage tapi ada di memori variabel
+    renderChatRoom(cachedMessagesPerUser[targetName]);
+  } else {
+    // Jika benar-benar baru pertama kali buka chat dengan user ini
+    document.getElementById('chat-room-body').innerHTML = '<div class="text-center mt-5 spinner-border text-primary spinner-border-sm"></div>';
+  }
+
+  // Sinkronisasi dengan server tetap berjalan di background
+  fetchChatUpdates();
+}
+
+  // Helper Enkripsi Teks Sementara agar tidak merusak HTML Tombol
+  function encodeChatSafe(str) { return btoa(encodeURIComponent(str)); }
+  function decodeChatSafe(b64) { return decodeURIComponent(atob(b64)); }
+
+  // --- LOGIKA AUTO LOGOUT ---
+  let idleTimer;
+  function startIdleTimer() { if (idleTimer) clearTimeout(idleTimer); idleTimer = setTimeout(forceAutoLogout, 10 * 60 * 1000); }
+  function resetIdleTimer() { if (userSession) startIdleTimer(); }
+  function forceAutoLogout() {
+    if (!userSession) return;
+    if (chatPolling) clearInterval(chatPolling);
+    if (heartbeatPolling) clearInterval(heartbeatPolling);
+    localStorage.removeItem('bastUser');
+    sessionStorage.clear();
+    userSession = null;
+    Swal.fire({
+      title: 'Sesi Berakhir!',
+      text: 'Anda telah logout otomatis (Idle 10 Menit).',
+      icon: 'warning',
+      confirmButtonText: 'Login Kembali',
+      allowOutsideClick: false,
+      allowEscapeKey: false
+    }).then(() => {
+      window.location.href = '/login';
+    });
+  }
+  ['mousemove', 'mousedown', 'keypress', 'touchmove', 'scroll', 'click'].forEach(evt => { document.addEventListener(evt, resetIdleTimer, true); });
+
+  function handleUpdatePassword() {
+  const oldP = document.getElementById('old-pass').value; 
+  const newP = document.getElementById('new-pass').value; 
+  const confP = document.getElementById('confirm-pass').value;
+
+  // Validasi Input
+  if(!oldP || !newP || !confP) {
+    return Swal.fire('Error', 'Semua kolom password wajib diisi!', 'error');
+  }
+  if(newP.length < 5) {
+    return Swal.fire('Error', 'Password baru minimal 5 karakter!', 'warning');
+  }
+  if(newP !== confP) {
+    return Swal.fire('Error', 'Konfirmasi password baru tidak cocok!', 'error');
+  }
+
+  loader(true); // Tampilkan loading overlay [cite: 1220]
+  
+  google.script.run
+    .withSuccessHandler(res => {
+      loader(false);
+      if(res.status === 'success') {
+        Swal.fire('Berhasil', res.message, 'success');
+        // Kosongkan form setelah sukses
+        document.getElementById('old-pass').value = '';
+        document.getElementById('new-pass').value = '';
+        document.getElementById('confirm-pass').value = '';
+      } else {
+        Swal.fire('Gagal', res.message, 'error');
+      }
+    })
+    .withFailureHandler(err => {
+      loader(false);
+      Swal.fire('Error Sistem', err.message, 'error');
+    })
+    .changeUserPassword(oldP, newP, userSession.username); // Kirim username dari sesi aktif 
+}
+  function toggleEmoji() {
+    document.getElementById('emoji-container').classList.toggle('d-none');
+  }
+
+  function addEmoji(emoji) {
+    const input = document.getElementById('chat-input');
+    input.value += emoji;
+    input.focus();
+    toggleEmoji(); // Tutup setelah pilih
+  }
+
+  function renderChatRoom(messages) {
+    if(isSendingChat) return; 
+    const body = document.getElementById('chat-room-body');
+    const isAtBottom = body.scrollHeight - body.scrollTop <= body.clientHeight + 100;
+    body.innerHTML = '';
+    
+    if (messages.length === 0) {
+      body.innerHTML = '<div class="text-center mt-3 shadow-sm" style="background:#ffeebc; padding:8px 12px; border-radius:8px; font-size:0.75rem; color:#667781; margin:auto; width:max-content;"><i class="bi bi-lock-fill"></i> Pesan terenkripsi secara end-to-end.</div>'; return;
+    }
+
+    messages.forEach(msg => {
+      const isMe = msg.sender === userSession.nama;
+      const bubble = document.createElement('div');
+      
+      let actionButtons = '';
+      let bubbleClass = `chat-bubble ${isMe ? 'me' : 'other'}`;
+      let editLabel = msg.isEdited && !msg.isDeleted ? '<small style="font-size:0.6rem; color:#8696a0; margin-right:5px;">(diedit)</small>' : '';
+      
+      // 🔴 PENGAMAN KARAKTER: Ubah pesan jadi teks aman (terenkripsi URL) agar tidak merusak tombol
+      // 🔴 PENGAMAN TOMBOL: Wajib memakai fungsi Helper ini, jangan pakai encodeURIComponent biasa!
+      let safeMsg = encodeChatSafe(msg.message);
+      
+      if (msg.isDeleted) {
+        bubbleClass += ' deleted-bubble';
+      } else if (isMe) {
+        actionButtons = `
+          <div class="chat-actions">
+            <i class="bi bi-pencil-square" onclick="requestEditChat('${msg.id}', '${safeMsg}')" title="Edit"></i>
+            <i class="bi bi-trash-fill text-danger" onclick="requestDeleteChat('${msg.id}')" title="Tarik Pesan"></i>
+          </div>
+        `;
+      }
+
+      let tickHtml = '';
+if (isMe) {
+  if (msg.status === 'read') {
+    tickHtml = `<i class="bi bi-check2-all text-info"></i>`; // Centang dua biru
+  } else if (msg.status === 'sent') {
+    tickHtml = `<i class="bi bi-check2-all"></i>`; // Centang dua abu
+  } else if (msg.status === 'sending') {
+    tickHtml = `<i class="bi bi-clock"></i>`; // Ikon jam (proses kirim)
+  } else if (msg.status === 'fail') {
+    tickHtml = `<i class="bi bi-exclamation-circle text-danger"></i>`; // Gagal kirim
+  }
+}
+      
+      bubble.className = bubbleClass;
+      bubble.innerHTML = `
+        ${actionButtons}
+        <div style="padding-right: ${isMe ? '45px' : '35px'}; position: relative; padding-top: ${isMe && !msg.isDeleted ? '10px' : '0'};">
+           ${msg.message.replace(/\n/g, '<br>')}
+           <span class="chat-meta" style="position: absolute; bottom: -4px; right: -5px;">${editLabel}${msg.timeSent} ${tickHtml}</span>
+        </div>
+      `;
+      body.appendChild(bubble);
+    });
+
+    if (isAtBottom) body.scrollTop = body.scrollHeight;
+  }
+
+  function requestEditChat(msgId, encodedMsg) {
+    // Membaca kembali teks asli dari kode Base64
+    const oldMsg = decodeChatSafe(encodedMsg).replace(/<br>/g, '\n');
+    
+    Swal.fire({
+      title: 'Edit Pesan',
+      input: 'textarea',
+      inputValue: oldMsg,
+      showCancelButton: true,
+      confirmButtonText: 'Simpan',
+      cancelButtonText: 'Batal'
+    }).then((result) => {
+      if (result.isConfirmed && result.value.trim() !== "") {
+        isSendingChat = true; 
+        google.script.run
+          .withSuccessHandler(() => { isSendingChat = false; fetchChatUpdates(); })
+          .withFailureHandler((err) => { isSendingChat = false; Swal.fire('Gagal', err.message, 'error'); fetchChatUpdates(); })
+          .editPrivateChat(userSession.nama, activeChatUser, msgId, result.value);
+      }
+    });
+  }
+
+  // --- 3. Fungsi Tombol Hapus ---
+  function requestDeleteChat(msgId) {
+    Swal.fire({
+      title: 'Tarik Pesan?',
+      text: "Pesan ini akan ditarik (dihapus) untuk Anda dan penerima.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      confirmButtonText: 'Ya, Tarik Pesan'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        isSendingChat = true; 
+        google.script.run
+          .withSuccessHandler(() => { isSendingChat = false; fetchChatUpdates(); })
+          .withFailureHandler((err) => { isSendingChat = false; Swal.fire('Gagal', err.message, 'error'); fetchChatUpdates(); })
+          .deletePrivateChat(userSession.nama, activeChatUser, msgId);
+      }
+    });
+  }
+  function sendPrivateChat() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text || !activeChatUser || isSendingChat) return;
+
+  // --- LANGKAH 1: OPTIMISTIC UI (TAMPIL INSTAN) ---
+  const timeNow = new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute: '2-digit'});
+  const tempId = "TEMP-" + Date.now();
+  
+  // Buat objek pesan sementara
+  const optimisticMsg = {
+    id: tempId,
+    sender: userSession.nama,
+    message: text,
+    timeSent: timeNow,
+    status: 'sending', // Status mengirim (ikon jam)
+    isEdited: false,
+    isDeleted: false
+  };
+
+  // Masukkan ke cache lokal dan render segera
+  if (!cachedMessagesPerUser[activeChatUser]) cachedMessagesPerUser[activeChatUser] = [];
+  cachedMessagesPerUser[activeChatUser].push(optimisticMsg);
+  renderChatRoom(cachedMessagesPerUser[activeChatUser]);
+
+  // Bersihkan input field
+  input.value = '';
+  document.getElementById('emoji-container').classList.add('d-none');
+  
+  // --- LANGKAH 2: KIRIM KE SERVER DI BACK-END ---
+  isSendingChat = true;
+  google.script.run
+    .withSuccessHandler(res => {
+      isSendingChat = false;
+      // Server akan mengembalikan data asli, handleChatUpdates akan merapikannya
+      handleChatUpdates(res);
+    })
+    .withFailureHandler(() => {
+      isSendingChat = false;
+      // Tandai pesan gagal jika internet putus
+      const msgIndex = cachedMessagesPerUser[activeChatUser].findIndex(m => m.id === tempId);
+      if(msgIndex > -1) cachedMessagesPerUser[activeChatUser][msgIndex].status = 'fail';
+      renderChatRoom(cachedMessagesPerUser[activeChatUser]);
+    })
+    .sendPrivateMessage(userSession.nama, activeChatUser, text); // [cite: 916, 3016]
+}
+  function requestClearChat() {
+    if(!activeChatUser || activeChatUser === 'PANTAUAN_ADMIN') return;
+    
+    Swal.fire({
+      title: 'Kosongkan Obrolan?',
+      text: `Semua riwayat pesan dengan ${activeChatUser} akan dihapus permanen untuk Anda berdua.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      confirmButtonText: 'Ya, Kosongkan!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        isSendingChat = true; // Kunci UI
+        
+        // Tampilkan animasi loading putar merah di tengah layar
+        const body = document.getElementById('chat-room-body');
+        body.innerHTML = '<div class="text-center mt-5 spinner-border text-danger spinner-border-sm"></div>';
+        
+        google.script.run
+          .withSuccessHandler(() => { 
+             isSendingChat = false; 
+             fetchChatUpdates(); // Segarkan layar jadi kosong
+             Swal.fire({toast:true, position:'top-end', icon:'success', title: 'Obrolan dibersihkan', showConfirmButton:false, timer:2000});
+          })
+          .withFailureHandler((err) => { 
+             isSendingChat = false; 
+             Swal.fire('Gagal', err.message, 'error'); 
+             fetchChatUpdates(); 
+          })
+          .clearPrivateChat(userSession.nama, activeChatUser);
+      }
+    });
+  }
+</script>
+</body>
+</html>
