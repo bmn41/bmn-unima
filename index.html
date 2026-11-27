@@ -1,1 +1,2165 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | BMN UNIMA</title>
+  <link rel="icon" type="image/png" href="https://drive.google.com/thumbnail?id=1LktwTo_ZiFkTNFUbR_aPpUk3-CKJZEgD&sz=w256" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+  <style>
+    :root {
+      --navy-950: #051224;
+      --navy-900: #07192f;
+      --navy-800: #0f2c52;
+      --gold-500: #d4af37;
+      --gold-400: #eab308;
+    }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #f1f5f9;
+      color: #0f172a;
+      overflow-x: hidden;
+    }
+    .font-mono-tech { font-family: 'JetBrains Mono', monospace; }
+
+    .ministry-gradient {
+      background: radial-gradient(circle at top right, #163e73 0%, #07192f 55%, #040d1a 100%);
+    }
+    .gold-gradient {
+      background: linear-gradient(135deg, #f3d266 0%, #d4af37 55%, #b3891b 100%);
+    }
+
+    /* SPINNER KEREN DENGAN LOGO UNIMA DI TENGAH */
+    #unimaLoader {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(5, 18, 36, 0.72);
+      backdrop-filter: blur(8px);
+    }
+    #unimaLoader.show { display: flex; }
+    .unima-spinner-wrap {
+      position: relative;
+      width: 112px;
+      height: 112px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .unima-ring-outer {
+      position: absolute;
+      inset: 0;
+      border-radius: 9999px;
+      border: 4px solid rgba(212, 175, 55, 0.16);
+      border-top-color: #f3d266;
+      border-right-color: #d4af37;
+      animation: spinCW 1.05s linear infinite;
+      box-shadow: 0 0 28px rgba(212, 175, 55, 0.35);
+    }
+    .unima-ring-inner {
+      position: absolute;
+      inset: 10px;
+      border-radius: 9999px;
+      border: 3px solid rgba(56, 189, 248, 0.14);
+      border-bottom-color: #38bdf8;
+      border-left-color: #60a5fa;
+      animation: spinCCW 0.8s linear infinite;
+    }
+    .unima-logo-core {
+      width: 62px;
+      height: 62px;
+      border-radius: 9999px;
+      background: #ffffff;
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+      animation: pulseCore 1.6s ease-in-out infinite;
+    }
+    @keyframes spinCW { to { transform: rotate(360deg); } }
+    @keyframes spinCCW { to { transform: rotate(-360deg); } }
+    @keyframes pulseCore {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+    }
+
+    /* SIDEBAR SCROLLBAR */
+    .sidebar-scroll::-webkit-scrollbar { width: 5px; }
+    .sidebar-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.18); border-radius: 8px; }
+
+    /* MENU ACTIVE STATES */
+    .menu-btn.active {
+      background: linear-gradient(90deg, rgba(212,175,55,0.22), rgba(212,175,55,0.06));
+      color: #f8dfa0;
+      border-left: 3px solid #d4af37;
+    }
+    .submenu-btn.active {
+      background: linear-gradient(90deg, #e7c24d, #d4af37);
+      color: #051224;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(212,175,55,0.28);
+    }
+
+    /* FLOATING CHAT */
+    .chat-fab {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 60px;
+      height: 60px;
+      border-radius: 9999px;
+      background: linear-gradient(135deg, #07192f, #1d4ed8);
+      color: #fff;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 12px 30px rgba(7, 25, 47, 0.42);
+      border: 2px solid rgba(212, 175, 55, 0.75);
+      cursor: pointer;
+      z-index: 9000;
+      transition: transform 0.2s ease;
+    }
+    .chat-fab:hover { transform: scale(1.08); }
+    .chat-panel {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 390px;
+      max-width: calc(100vw - 24px);
+      height: 560px;
+      max-height: calc(100vh - 48px);
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 25px 60px rgba(5, 18, 36, 0.35);
+      border: 1px solid #cbd5e1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 9100;
+      transform: translateY(120%);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .chat-panel.open {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* DIGITAL CLOCK GLASS */
+    .clock-panel {
+      background: linear-gradient(135deg, #07192f 0%, #102a4c 60%, #0b223f 100%);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      box-shadow: 0 18px 40px rgba(7, 25, 47, 0.22);
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <!-- ====================================================================== -->
+  <!-- SPINNER PROSES KEREN DENGAN LOGO UNIMA DI TENGAH                       -->
+  <!-- ====================================================================== -->
+  <div id="unimaLoader">
+    <div class="flex flex-col items-center gap-4 px-8 py-7 rounded-3xl bg-slate-950/80 border border-amber-400/30 shadow-2xl">
+      <div class="unima-spinner-wrap">
+        <div class="unima-ring-outer"></div>
+        <div class="unima-ring-inner"></div>
+        <div class="unima-logo-core">
+          <img
+            src="https://drive.google.com/thumbnail?id=1LktwTo_ZiFkTNFUbR_aPpUk3-CKJZEgD&sz=w256"
+            onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Logo-Unima-2023.png/500px-Logo-Unima-2023.png'"
+            alt="Logo UNIMA"
+            class="w-full h-full object-contain"
+          />
+        </div>
+      </div>
+      <div class="text-center">
+        <p id="loaderText" class="text-sm font-bold text-amber-300 tracking-wide">Memproses Data...</p>
+        <p class="text-[11px] text-slate-400 mt-0.5">BMN UNIMA • Universitas Negeri Manado</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- HALAMAN LOGIN (KELAS KEMENTERIAN)                                      -->
+  <!-- ====================================================================== -->
+  <section id="loginView" class="min-h-screen ministry-gradient flex items-center justify-center p-4">
+    <div class="w-full max-w-5xl grid md:grid-cols-12 rounded-3xl overflow-hidden shadow-2xl border border-white/15 bg-white">
+      <!-- Panel Kiri -->
+      <div class="md:col-span-6 ministry-gradient text-white p-8 sm:p-10 flex flex-col justify-between relative">
+        <div>
+          <div class="flex items-center gap-4 mb-8">
+            <div class="w-16 h-16 rounded-2xl bg-white p-2 shadow-xl border-2 border-amber-400/70 shrink-0">
+              <img
+                src="https://drive.google.com/thumbnail?id=1LktwTo_ZiFkTNFUbR_aPpUk3-CKJZEgD&sz=w256"
+                onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Logo-Unima-2023.png/500px-Logo-Unima-2023.png'"
+                alt="UNIMA"
+                class="w-full h-full object-contain"
+              />
+            </div>
+            <div>
+              <span class="inline-block px-3 py-0.5 rounded-full text-[10px] font-extrabold tracking-widest uppercase bg-amber-400/20 text-amber-300 border border-amber-400/40">
+                KEMENDIKTISAINTEK RI
+              </span>
+              <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1">BMN UNIMA</h1>
+              <p class="text-xs text-slate-300">Sub Bagian Perlengkapan • Universitas Negeri Manado</p>
+            </div>
+          </div>
+
+          <p class="text-sm text-slate-200 leading-relaxed mb-6">
+            Portal Terpadu Pengelolaan Barang Milik Negara yang mengintegrasikan seluruh layanan administrasi aset dalam satu pintu aman dan cepat.
+          </p>
+
+          <div class="grid grid-cols-2 gap-3 text-xs">
+            <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10">
+              <i class="bi bi-file-earmark-check-fill text-amber-400 text-lg"></i>
+              <p class="font-bold mt-1.5">BAST BMN</p>
+              <p class="text-[11px] text-slate-400">Serah terima, memo & kendaraan</p>
+            </div>
+            <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10">
+              <i class="bi bi-archive-fill text-sky-400 text-lg"></i>
+              <p class="font-bold mt-1.5">Arsip Dokumen</p>
+              <p class="text-[11px] text-slate-400">Aset, persediaan & surat</p>
+            </div>
+            <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10">
+              <i class="bi bi-building-fill-check text-emerald-400 text-lg"></i>
+              <p class="font-bold mt-1.5">DBR BMN</p>
+              <p class="text-[11px] text-slate-400">Daftar barang ruangan & mutasi</p>
+            </div>
+            <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10">
+              <i class="bi bi-journal-bookmark-fill text-purple-400 text-lg"></i>
+              <p class="font-bold mt-1.5">CaLBMN</p>
+              <p class="text-[11px] text-slate-400">Catatan laporan & rekonsiliasi</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8 pt-4 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-400">
+          <span><i class="bi bi-shield-lock-fill text-amber-400 mr-1"></i>Enkripsi SHA-256</span>
+          <span>Auto-Logout 20 Menit</span>
+        </div>
+      </div>
+
+      <!-- Panel Kanan: Form Login -->
+      <div class="md:col-span-6 p-8 sm:p-10 flex flex-col justify-center bg-white">
+        <div class="mb-7">
+          <span class="text-[11px] font-extrabold uppercase tracking-widest text-amber-600">Single Sign-On Portal</span>
+          <h2 class="text-2xl font-extrabold text-slate-900 mt-1">Masuk ke BMN UNIMA</h2>
+          <p class="text-xs text-slate-500 mt-1">Satu kali login untuk mengakses seluruh menu sesuai kewenangan akun Anda.</p>
+        </div>
+
+        <form onsubmit="handleLogin(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Username</label>
+            <div class="relative">
+              <i class="bi bi-person-fill absolute left-3.5 top-3 text-slate-400"></i>
+              <input type="text" id="loginUser" required autocomplete="username" placeholder="Masukkan username"
+                class="w-full pl-10 pr-4 py-3 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-900 focus:border-blue-900 focus:outline-none" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Password</label>
+            <div class="relative">
+              <i class="bi bi-key-fill absolute left-3.5 top-3 text-slate-400"></i>
+              <input type="password" id="loginPass" required autocomplete="current-password" placeholder="Masukkan password"
+                class="w-full pl-10 pr-11 py-3 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-900 focus:border-blue-900 focus:outline-none" />
+              <button type="button" onclick="togglePassVisibility()" class="absolute right-3.5 top-3 text-slate-400 hover:text-slate-700">
+                <i id="passEyeIcon" class="bi bi-eye-fill"></i>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit"
+            class="w-full py-3.5 rounded-xl ministry-gradient text-white font-extrabold text-sm shadow-lg hover:opacity-95 transition flex items-center justify-center gap-2 mt-2">
+            <span>MASUK KE PORTAL</span>
+            <i class="bi bi-arrow-right-circle-fill text-amber-400"></i>
+          </button>
+        </form>
+
+        <div class="mt-6 p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-600 flex items-start gap-2.5">
+          <i class="bi bi-info-circle-fill text-blue-900 text-sm mt-0.5"></i>
+          <span>Sesi login akan otomatis berakhir apabila tidak ada aktivitas selama <b>20 menit</b> demi menjaga keamanan data negara.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================================== -->
+  <!-- SHELL APLIKASI UTAMA (SIDEBAR + TOPBAR + WORKSPACE)                    -->
+  <!-- ====================================================================== -->
+  <div id="appShell" class="hidden min-h-screen flex bg-slate-100">
+    <!-- Backdrop Mobile Sidebar -->
+    <div id="sidebarBackdrop" onclick="toggleMobileSidebar(false)" class="fixed inset-0 bg-slate-950/60 z-40 hidden lg:hidden"></div>
+
+    <!-- SIDEBAR KEMENTERIAN -->
+    <aside id="mainSidebar" class="fixed lg:sticky top-0 left-0 z-50 h-screen w-72 ministry-gradient text-white flex flex-col shrink-0 transition-transform duration-300 -translate-x-full lg:translate-x-0 shadow-2xl">
+      <!-- Brand -->
+      <div class="p-4 border-b border-white/10 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-11 h-11 rounded-xl bg-white p-1.5 border border-amber-400/70 shrink-0 shadow">
+            <img
+              src="https://drive.google.com/thumbnail?id=1LktwTo_ZiFkTNFUbR_aPpUk3-CKJZEgD&sz=w256"
+              onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Logo-Unima-2023.png/500px-Logo-Unima-2023.png'"
+              alt="Logo UNIMA"
+              class="w-full h-full object-contain"
+            />
+          </div>
+          <div class="min-w-0">
+            <h1 class="font-extrabold text-base tracking-tight leading-tight text-white">BMN UNIMA</h1>
+            <p class="text-[10px] text-amber-300 font-semibold truncate">Portal Aset Terpadu</p>
+          </div>
+        </div>
+        <button onclick="toggleMobileSidebar(false)" class="lg:hidden text-slate-300 hover:text-white p-1">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <!-- Info Pengguna Aktif -->
+      <div class="px-4 py-3 bg-black/20 border-b border-white/10 flex items-center gap-3">
+        <div id="sidebarAvatar" class="w-9 h-9 rounded-full gold-gradient text-slate-950 font-extrabold text-xs flex items-center justify-center shrink-0">SA</div>
+        <div class="min-w-0 flex-1">
+          <p id="sidebarUserName" class="text-xs font-bold text-white truncate">Super Administrator</p>
+          <span id="sidebarUserRole" class="inline-block mt-0.5 px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-amber-400/20 text-amber-300 border border-amber-400/40">SUPER_ADMIN</span>
+        </div>
+      </div>
+
+      <!-- Navigasi Dinamis (Menu + Submenu) -->
+      <nav id="sidebarNav" class="flex-1 overflow-y-auto sidebar-scroll p-3 space-y-1.5"></nav>
+
+      <!-- Footer Sidebar -->
+      <div class="p-3 border-t border-white/10 space-y-2">
+        <div id="superMaintenanceBox" class="hidden px-3 py-2 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
+          <span class="text-[11px] font-bold text-slate-200"><i class="bi bi-power mr-1 text-amber-400"></i>Status Sistem</span>
+          <button id="btnToggleSystem" onclick="handleToggleMaintenance()" class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold bg-emerald-500 text-slate-950">AKTIF</button>
+        </div>
+        <button onclick="confirmLogout()" class="w-full py-2.5 px-3 rounded-xl bg-rose-600/20 hover:bg-rose-600 text-rose-200 hover:text-white border border-rose-500/30 text-xs font-bold flex items-center justify-center gap-2 transition">
+          <i class="bi bi-box-arrow-left"></i><span>Keluar Sistem</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- AREA KANAN (TOPBAR + KONTEN) -->
+    <div class="flex-1 flex flex-col min-w-0 min-h-screen">
+      <!-- Top Header -->
+      <header class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-200 px-4 sm:px-6 py-3 flex items-center justify-between gap-3 shadow-sm">
+        <div class="flex items-center gap-3 min-w-0">
+          <button onclick="toggleMobileSidebar(true)" class="lg:hidden p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800">
+            <i class="bi bi-list text-lg"></i>
+          </button>
+          <div class="min-w-0">
+            <p id="topBreadcrumb" class="text-[10px] font-bold uppercase tracking-wider text-amber-600">BMN UNIMA</p>
+            <h2 id="topPageTitle" class="text-sm sm:text-base font-extrabold text-slate-900 truncate">Dashboard Utama</h2>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 sm:gap-3">
+          <div class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-xs font-mono-tech text-slate-700" title="Sisa waktu idle sebelum auto-logout">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span id="idleCountdown">20:00</span>
+          </div>
+          <button onclick="refreshCurrentView()" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm" title="Segarkan Halaman">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- KONTEN DINAMIS -->
+      <main class="flex-1 flex flex-col">
+
+        <!-- VIEW 1: DASHBOARD UTAMA -->
+        <section id="view-dashboard" class="portal-view p-4 sm:p-6 space-y-6">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+            <!-- Hero Banner -->
+            <div class="lg:col-span-8 ministry-gradient text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden border border-amber-400/25">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                <i class="bi bi-stars"></i> Portal Terintegrasi BMN UNIMA
+              </span>
+              <h3 class="text-2xl sm:text-3xl font-extrabold mt-3">Selamat Datang, <span id="dashHeroName" class="text-amber-300">Super Administrator</span></h3>
+              <p class="text-xs sm:text-sm text-slate-300 mt-2 max-w-2xl leading-relaxed">
+                Akses seluruh aplikasi BAST BMN, Arsip Dokumen, DBR BMN, dan CaLBMN secara langsung tanpa login berulang. Seluruh data tersinkronisasi aman dengan database masing-masing modul.
+              </p>
+              <div class="mt-5 flex flex-wrap gap-2" id="dashQuickActions"></div>
+            </div>
+
+            <!-- JAM DIGITAL KEREN WITA -->
+            <div class="lg:col-span-4 clock-panel rounded-3xl p-6 text-white flex flex-col justify-between">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono-tech uppercase tracking-widest text-amber-300 font-bold">WAKTU SERVER // WITA</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">LIVE</span>
+              </div>
+              <div class="my-4 text-center">
+                <div id="dashClockTime" class="font-mono-tech text-4xl sm:text-5xl font-extrabold tracking-wider text-sky-300 drop-shadow-[0_0_16px_rgba(56,189,248,0.55)]">00:00:00</div>
+                <div id="dashClockDate" class="text-xs sm:text-sm font-semibold text-amber-200 mt-2 tracking-wide">Memuat tanggal...</div>
+              </div>
+              <div class="pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-300">
+                <span><i class="bi bi-geo-alt-fill text-amber-400 mr-1"></i>Kampus UNIMA Tondano</span>
+                <span class="font-mono-tech text-amber-300">GMT+8</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Kartu Modul Aplikasi -->
+          <div>
+            <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-3">Modul Layanan BMN UNIMA</h4>
+            <div id="dashModuleCards" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4"></div>
+          </div>
+        </section>
+
+        <!-- VIEW 2: CONTAINER MICRO-FRONTEND MODUL (IFRAME CACHED 0ms) -->
+        <section id="view-module" class="portal-view hidden flex-1 flex flex-col">
+          <div id="moduleFramesHost" class="flex-1 relative min-h-[calc(100vh-64px)] bg-white"></div>
+        </section>
+
+        <!-- VIEW 3: PENGATURAN USER & ROLE -->
+        <section id="view-users_roles" class="portal-view hidden p-4 sm:p-6 space-y-5">
+          <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h3 class="text-lg font-extrabold text-slate-900">Pengaturan User, Role & Hak Akses Granular</h3>
+              <p class="text-xs text-slate-500">Atur role, pilih menu/submenu/tombol per role, atau tentukan hak akses khusus berbeda untuk tiap user.</p>
+            </div>
+            <div class="flex gap-2">
+              <button id="urTabBtnUsers" onclick="switchURTab('users')" class="px-4 py-2 rounded-xl ministry-gradient text-white text-xs font-bold">
+                <i class="bi bi-people-fill mr-1"></i>Daftar User
+              </button>
+              <button id="urTabBtnRoles" onclick="switchURTab('roles')" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold">
+                <i class="bi bi-shield-fill-check mr-1"></i>Daftar Role
+              </button>
+            </div>
+          </div>
+
+          <!-- SUB-PANEL USERS -->
+          <div id="urPanelUsers" class="space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <input type="text" id="searchUsersInput" oninput="renderUsersTable()" placeholder="Cari username, nama, atau role..."
+                class="w-full sm:w-80 px-4 py-2.5 text-xs bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900" />
+              <button onclick="openUserFormModal(null)" class="px-4 py-2.5 rounded-xl gold-gradient text-slate-950 font-extrabold text-xs shadow flex items-center gap-1.5">
+                <i class="bi bi-person-plus-fill"></i><span>Tambah User Baru</span>
+              </button>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr class="bg-slate-900 text-white uppercase text-[11px]">
+                      <th class="py-3.5 px-4">Username</th>
+                      <th class="py-3.5 px-4">Nama Lengkap & NIP</th>
+                      <th class="py-3.5 px-4">Role</th>
+                      <th class="py-3.5 px-4">Hak Akses</th>
+                      <th class="py-3.5 px-4 text-center">Status</th>
+                      <th class="py-3.5 px-4 text-right">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody id="usersTableBody" class="divide-y divide-slate-200"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- SUB-PANEL ROLES -->
+          <div id="urPanelRoles" class="hidden space-y-4">
+            <div class="flex justify-end">
+              <button onclick="openRoleEditorModal(null)" class="px-4 py-2.5 rounded-xl gold-gradient text-slate-950 font-extrabold text-xs shadow flex items-center gap-1.5">
+                <i class="bi bi-plus-circle-fill"></i><span>Buat Role Baru</span>
+              </button>
+            </div>
+            <div id="rolesGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+          </div>
+        </section>
+
+        <!-- VIEW 4: LOG AKTIVITAS (BEBAS LOG CHAT) -->
+        <section id="view-logs" class="portal-view hidden p-4 sm:p-6 space-y-4">
+          <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h3 class="text-lg font-extrabold text-slate-900">Log Aktivitas Sistem</h3>
+              <p class="text-xs text-slate-500">Rekam jejak seluruh aktivitas pengguna & manajemen sistem (aktivitas chat dikecualikan).</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <input type="text" id="logSearchInput" oninput="renderLogsTable()" placeholder="Cari user, modul, aksi..."
+                class="px-3.5 py-2 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900" />
+              <button onclick="loadLogsFromServer()" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold">
+                <i class="bi bi-arrow-clockwise mr-1"></i>Refresh
+              </button>
+              <button id="btnClearLogs" onclick="confirmClearLogs()" class="hidden px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold">
+                <i class="bi bi-trash3-fill mr-1"></i>Bersihkan Log
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="overflow-x-auto max-h-[65vh]">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead class="sticky top-0 bg-slate-900 text-white uppercase text-[11px]">
+                  <tr>
+                    <th class="py-3 px-4">Waktu (WITA)</th>
+                    <th class="py-3 px-4">Pengguna</th>
+                    <th class="py-3 px-4">Role</th>
+                    <th class="py-3 px-4">Modul</th>
+                    <th class="py-3 px-4">Aksi</th>
+                    <th class="py-3 px-4">Rincian</th>
+                  </tr>
+                </thead>
+                <tbody id="logsTableBody" class="divide-y divide-slate-200"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- VIEW 5: KEAMANAN AKUN -->
+        <section id="view-keamanan" class="portal-view hidden p-4 sm:p-6">
+          <div class="max-w-lg mx-auto bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5">
+            <div class="flex items-center gap-3 pb-4 border-b border-slate-100">
+              <div class="w-12 h-12 rounded-2xl ministry-gradient text-amber-400 flex items-center justify-center text-xl">
+                <i class="bi bi-shield-lock-fill"></i>
+              </div>
+              <div>
+                <h3 class="text-base font-extrabold text-slate-900">Keamanan Akun Pribadi</h3>
+                <p class="text-xs text-slate-500">Perbarui password Anda secara berkala (Enkripsi SHA-256).</p>
+              </div>
+            </div>
+            <form onsubmit="handleChangeOwnPassword(event)" class="space-y-4">
+              <div>
+                <label class="block text-xs font-bold text-slate-600 mb-1">Password Lama</label>
+                <input type="password" id="ownOldPass" required class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-600 mb-1">Password Baru (Minimal 5 Karakter)</label>
+                <input type="password" id="ownNewPass" required minlength="5" class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-600 mb-1">Konfirmasi Password Baru</label>
+                <input type="password" id="ownConfirmPass" required minlength="5" class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl" />
+              </div>
+              <button type="submit" class="w-full py-3 rounded-xl ministry-gradient text-white font-extrabold text-xs shadow">
+                <i class="bi bi-check-circle-fill text-amber-400 mr-1.5"></i>Simpan Password Baru
+              </button>
+            </form>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- MODAL EDITOR HAK AKSES (DIPAKAI UNTUK ROLE MAUPUN CUSTOM PER USER)     -->
+  <!-- ====================================================================== -->
+  <div id="permModal" class="fixed inset-0 z-[9500] hidden items-center justify-center bg-slate-950/75 backdrop-blur-sm p-3 sm:p-5">
+    <div class="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200">
+      <div class="ministry-gradient text-white px-6 py-4 flex items-center justify-between border-b-4 border-amber-400">
+        <div>
+          <h3 id="permModalTitle" class="font-extrabold text-base">Atur Hak Akses</h3>
+          <p id="permModalSub" class="text-[11px] text-slate-300">Centang menu, submenu, dan tombol aksi yang diizinkan.</p>
+        </div>
+        <button onclick="closePermModal()" class="text-slate-300 hover:text-white"><i class="bi bi-x-lg"></i></button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-6 space-y-5 text-xs">
+        <div id="permRoleMetaFields" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Nama Role (Tanpa Spasi)</label>
+            <input type="text" id="permRoleName" placeholder="Contoh: OPERATOR_ASET" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl font-bold uppercase" />
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Deskripsi Role</label>
+            <input type="text" id="permRoleDesc" placeholder="Keterangan singkat peran" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl" />
+          </div>
+        </div>
+
+        <!-- Hak Tombol / Aksi -->
+        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <h4 class="font-extrabold text-slate-800 uppercase tracking-wider">1. Hak Tombol & Aksi</h4>
+            <div class="space-x-2">
+              <button type="button" onclick="togglePermGroup('permActionCb', true)" class="text-blue-700 font-bold hover:underline">Pilih Semua</button>
+              <button type="button" onclick="togglePermGroup('permActionCb', false)" class="text-rose-600 font-bold hover:underline">Kosongkan</button>
+            </div>
+          </div>
+          <div id="permActionsGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
+        </div>
+
+        <!-- Hak Menu & Submenu -->
+        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="font-extrabold text-slate-800 uppercase tracking-wider">2. Menu Utama & Submenu yang Dimunculkan</h4>
+            <div class="space-x-2">
+              <button type="button" onclick="togglePermGroup('permMenuCb', true); togglePermGroup('permSubCb', true);" class="text-blue-700 font-bold hover:underline">Pilih Semua</button>
+              <button type="button" onclick="togglePermGroup('permMenuCb', false); togglePermGroup('permSubCb', false);" class="text-rose-600 font-bold hover:underline">Kosongkan</button>
+            </div>
+          </div>
+          <div id="permMenusContainer" class="space-y-3"></div>
+        </div>
+      </div>
+
+      <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
+        <button id="btnResetUserToRole" type="button" onclick="resetCurrentUserPermsToRole()" class="hidden px-4 py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold text-xs">
+          <i class="bi bi-arrow-counterclockwise mr-1"></i>Kembalikan ke Default Role
+        </button>
+        <div class="flex gap-2 ml-auto">
+          <button type="button" onclick="closePermModal()" class="px-4 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs">Batal</button>
+          <button type="button" onclick="savePermModalData()" class="px-5 py-2.5 rounded-xl ministry-gradient text-white font-extrabold text-xs shadow">
+            <i class="bi bi-floppy-fill text-amber-400 mr-1.5"></i>Simpan Hak Akses
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- FLOATING CHAT SUPER CEPAT (CENTANG 1 ABU, 2 ABU ONLINE, 2 BIRU + DETAIL) -->
+  <!-- ====================================================================== -->
+  <div id="chatFab" class="chat-fab" onclick="toggleChatPanel()">
+    <i class="bi bi-chat-dots-fill text-2xl"></i>
+    <span id="chatBadgeGlobal" class="hidden absolute -top-1 -right-1 min-w-[22px] h-[22px] px-1.5 rounded-full bg-rose-600 text-white text-[11px] font-extrabold flex items-center justify-center border-2 border-white">0</span>
+  </div>
+
+  <div id="chatPanel" class="chat-panel">
+    <!-- Header Chat -->
+    <div class="ministry-gradient text-white px-4 py-3 flex items-center justify-between border-b-2 border-amber-400 shrink-0">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <button id="chatBackBtn" onclick="backToChatContacts()" class="hidden p-1 rounded-lg hover:bg-white/10">
+          <i class="bi bi-arrow-left text-base"></i>
+        </button>
+        <div class="min-w-0">
+          <p id="chatHeaderTitle" class="text-sm font-extrabold truncate">Pesan Internal BMN</p>
+          <p id="chatHeaderSub" class="text-[10px] text-amber-300 truncate">Komunikasi cepat antar pegawai</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="chatClearBtn" onclick="confirmClearChat()" title="Bersihkan Obrolan" class="hidden p-1.5 rounded-lg hover:bg-white/10 text-amber-300">
+          <i class="bi bi-trash3-fill"></i>
+        </button>
+        <button onclick="toggleChatPanel()" class="p-1.5 rounded-lg hover:bg-white/10">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Tab Kontak vs Pantauan Siluman (Khusus Super Admin) -->
+    <div id="chatSuperTabs" class="hidden grid grid-cols-2 bg-slate-100 border-b border-slate-200 p-1 gap-1 shrink-0 text-xs font-bold">
+      <button id="chatTabNormal" onclick="switchChatListTab('normal')" class="py-1.5 rounded-lg bg-white text-slate-900 shadow-sm">
+        <i class="bi bi-people-fill mr-1"></i>Semua User
+      </button>
+      <button id="chatTabMonitor" onclick="switchChatListTab('monitor')" class="py-1.5 rounded-lg text-amber-800 hover:bg-amber-50">
+        <i class="bi bi-incognito mr-1"></i>Pantau Chat
+      </button>
+    </div>
+
+    <!-- View Daftar Kontak -->
+    <div id="chatContactsView" class="flex-1 overflow-y-auto bg-slate-50 divide-y divide-slate-200"></div>
+
+    <!-- View Room Obrolan -->
+    <div id="chatRoomView" class="hidden flex-1 flex flex-col min-h-0">
+      <div id="chatMonitorNotice" class="hidden px-3 py-1.5 bg-amber-100 text-amber-950 text-[11px] font-bold text-center border-b border-amber-300">
+        <i class="bi bi-eye-slash-fill mr-1"></i>Mode Pantauan Siluman Super Admin (Tidak Terlihat User)
+      </div>
+      <div id="chatMessagesBody" class="flex-1 overflow-y-auto p-3.5 space-y-2.5 bg-slate-100"></div>
+      <div id="chatInputBar" class="p-2.5 bg-white border-t border-slate-200 flex items-center gap-2 shrink-0">
+        <input type="text" id="chatInput" placeholder="Ketik pesan..." onkeypress="if(event.key==='Enter') handleSendChat()"
+          class="flex-1 px-3.5 py-2 text-xs bg-slate-100 border border-slate-200 rounded-full focus:outline-none focus:bg-white focus:border-blue-900" />
+        <button onclick="handleSendChat()" class="w-9 h-9 rounded-full ministry-gradient text-amber-400 flex items-center justify-center shrink-0 hover:opacity-95">
+          <i class="bi bi-send-fill text-xs"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // 1. KONFIGURASI MENU, SUBMENU, ROUTE URL, & JUDUL TAB
+    // =========================================================================
+    const CORE_API = '/api?module=core';
+    const SESSION_KEY = 'BMN_UNIMA_SESSION_V1';
+    const IDLE_LIMIT_MS = 20 * 60 * 1000; // 20 Menit
+
+    const ACTION_DEFS = [
+      { key: 'view',     label: 'Lihat Data' },
+      { key: 'create',   label: 'Tambah / Buat' },
+      { key: 'upload',   label: 'Upload File' },
+      { key: 'edit',     label: 'Edit Data' },
+      { key: 'delete',   label: 'Hapus Data' },
+      { key: 'download', label: 'Download / Ekspor' },
+      { key: 'print',    label: 'Cetak PDF / Rekap' },
+      { key: 'verify',   label: 'Verifikasi' }
+    ];
+
+    const MENU_CATALOG = [
+      {
+        key: 'bast',
+        label: 'BAST BMN',
+        desc: 'Berita acara serah terima, memo perintah, peminjaman & kendaraan dinas.',
+        icon: 'bi-file-earmark-check-fill',
+        color: 'from-blue-900 to-blue-700',
+        moduleFile: '/modules/bast.html',
+        submenus: [
+          { key: 'bast:BAST_Peralatan_Mesin',    sub: 'BAST_Peralatan_Mesin',    label: 'BAST BMN',             slug: '/bast/bast-bmn' },
+          { key: 'bast:BAST_Kendaraan_Dinas',    sub: 'BAST_Kendaraan_Dinas',    label: 'BAST Kendaraan Dinas', slug: '/bast/kendaraan-dinas' },
+          { key: 'bast:Memo_Perintah',           sub: 'Memo_Perintah',           label: 'Memo Perintah',        slug: '/bast/memo-perintah' },
+          { key: 'bast:Berita_Acara_Peminjaman', sub: 'Berita_Acara_Peminjaman', label: 'BA Peminjaman BMN',    slug: '/bast/ba-peminjaman' },
+          { key: 'bast:Tanda_Terima_Lainnya',    sub: 'Tanda_Terima_Lainnya',    label: 'Tanda Terima Lainnya', slug: '/bast/tanda-terima' },
+          { key: 'bast:dokumen_tercetak',        sub: 'dokumen_tercetak',        label: 'Dokumen Tercetak',     slug: '/bast/dokumen-tercetak' }
+        ]
+      },
+      {
+        key: 'arsip',
+        label: 'Arsip Dokumen BMN',
+        desc: 'Pengarsipan digital Aset Tetap, Persediaan, Surat Masuk/Keluar & Rekap.',
+        icon: 'bi-archive-fill',
+        color: 'from-amber-600 to-yellow-500',
+        moduleFile: '/modules/arsip.html',
+        submenus: [
+          { key: 'arsip:lihat',           sub: 'lihat',           label: 'Lihat & Kelola Arsip',      slug: '/arsip/lihat-arsip' },
+          { key: 'arsip:PERALATAN',       sub: 'PERALATAN',       label: 'Belanja Modal Peralatan',   slug: '/arsip/peralatan' },
+          { key: 'arsip:GEDUNG',          sub: 'GEDUNG',          label: 'Belanja Modal Gedung',      slug: '/arsip/gedung' },
+          { key: 'arsip:LAINNYA',         sub: 'LAINNYA',         label: 'Belanja Modal Lainnya',     slug: '/arsip/modal-lainnya' },
+          { key: 'arsip:PERAWATAN',       sub: 'PERAWATAN',       label: 'Belanja Perawatan',         slug: '/arsip/perawatan' },
+          { key: 'arsip:BELANJA_LAINNYA', sub: 'BELANJA_LAINNYA', label: 'Belanja Lainnya',           slug: '/arsip/belanja-lainnya' },
+          { key: 'arsip:BAST',            sub: 'BAST',            label: 'Dokumen BAST BMN',          slug: '/arsip/bast' },
+          { key: 'arsip:LAPORAN_ASET',    sub: 'LAPORAN_ASET',    label: 'Laporan Aset Tetap',        slug: '/arsip/laporan-aset' },
+          { key: 'arsip:KONTRAK',         sub: 'KONTRAK',         label: 'Belanja Barang Persediaan', slug: '/arsip/persediaan' },
+          { key: 'arsip:LAPORAN_PERS',    sub: 'LAPORAN_PERS',    label: 'Laporan Persediaan',        slug: '/arsip/laporan-persediaan' },
+          { key: 'arsip:PERS_LAINNYA',    sub: 'PERS_LAINNYA',    label: 'Dokumen Persediaan Lain',   slug: '/arsip/persediaan-lain' },
+          { key: 'arsip:SURAT_MASUK',     sub: 'SURAT_MASUK',     label: 'Surat Masuk',               slug: '/arsip/surat-masuk' },
+          { key: 'arsip:SURAT_KELUAR',    sub: 'SURAT_KELUAR',    label: 'Surat Keluar',              slug: '/arsip/surat-keluar' },
+          { key: 'arsip:NOTA_PERMINTAAN', sub: 'NOTA_PERMINTAAN', label: 'Nota Permintaan',           slug: '/arsip/nota-permintaan' },
+          { key: 'arsip:LAIN_LAIN',       sub: 'LAIN_LAIN',       label: 'Dokumen Lain-Lain',         slug: '/arsip/lain-lain' },
+          { key: 'arsip:rekap',           sub: 'rekap',           label: 'Cetak Rekap Arsip',         slug: '/arsip/cetak-rekap' },
+          { key: 'arsip:tercetak',        sub: 'tercetak',        label: 'Dokumen Tercetak',          slug: '/arsip/dokumen-tercetak' }
+        ]
+      },
+      {
+        key: 'dbr',
+        label: 'DBR BMN',
+        desc: 'Daftar Barang Ruangan per Gedung, Lantai, Kelompok, Print & Verifikasi.',
+        icon: 'bi-building-fill-check',
+        color: 'from-emerald-700 to-teal-600',
+        moduleFile: '/modules/dbr.html',
+        submenus: [
+          { key: 'dbr:dbr',        sub: 'dbr',        label: 'Gedung & DBR',        slug: '/dbr/gedung-dbr' },
+          { key: 'dbr:printdbr',   sub: 'printdbr',   label: 'Pusat Print DBR',     slug: '/dbr/print-dbr' },
+          { key: 'dbr:verifikasi', sub: 'verifikasi', label: 'Verifikasi Mutasi',   slug: '/dbr/verifikasi' }
+        ]
+      },
+      {
+        key: 'calbmn',
+        label: 'CaLBMN',
+        desc: 'Penyusunan Catatan atas Laporan BMN Bab I–V, Ekspor Excel & PDF.',
+        icon: 'bi-journal-bookmark-fill',
+        color: 'from-indigo-800 to-purple-700',
+        moduleFile: '/modules/calbmn.html',
+        submenus: [
+          { key: 'calbmn:dashboard', sub: 'dashboard', label: 'Daftar Laporan',      slug: '/calbmn/daftar-laporan' },
+          { key: 'calbmn:editor',    sub: 'editor',    label: 'Editor Kertas Kerja', slug: '/calbmn/editor' },
+          { key: 'calbmn:preview',   sub: 'preview',   label: 'Pratinjau & Cetak',   slug: '/calbmn/pratinjau' }
+        ]
+      }
+    ];
+
+    const SYSTEM_MENUS = [
+      { key: 'users_roles', label: 'Pengaturan User & Role', icon: 'bi-people-fill', slug: '/pengaturan/user-role' },
+      { key: 'logs',        label: 'Log Aktivitas',          icon: 'bi-clock-history', slug: '/log-aktivitas' },
+      { key: 'keamanan',    label: 'Keamanan Akun',          icon: 'bi-shield-lock-fill', slug: '/keamanan-akun' }
+    ];
+
+    // =========================================================================
+    // 2. STATE GLOBAL
+    // =========================================================================
+    let currentUser = null;
+    let appSettings = { isActive: true, idleTimeoutMinutes: 20 };
+    let usersCache = [];
+    let rolesCache = [];
+    let logsCache = [];
+    let activeRoute = { type: 'dashboard', menu: 'dashboard', sub: '' };
+    let openAccordion = {};
+    let loadedIframes = {};
+    let lastActivityMs = Date.now();
+    let idleInterval = null;
+    let permModalContext = { mode: 'role', target: null };
+
+    // State Chat
+    let chatOpen = false;
+    let chatListTab = 'normal'; // 'normal' | 'monitor'
+    let chatActiveTarget = '';
+    let chatIsMonitor = false;
+    let chatTimer = null;
+    let chatFetching = false;
+    let chatSending = false;
+    let chatState = { users: [], unreadPerUser: {}, monitorThreads: [], messages: [] };
+    let chatLastRenderHash = '';
+
+    // =========================================================================
+    // 3. HELPER API, LOADER UNIMA, SWEETALERT
+    // =========================================================================
+    function showLoader(msg = 'Memproses Data...') {
+      document.getElementById('loaderText').textContent = msg;
+      document.getElementById('unimaLoader').classList.add('show');
+    }
+    function hideLoader() {
+      document.getElementById('unimaLoader').classList.remove('show');
+    }
+
+    async function callCore(action, ...args) {
+      const res = await fetch(CORE_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action, args })
+      });
+      const text = await res.text();
+      let json;
+      try { json = JSON.parse(text); } catch (e) { throw new Error('Respons server tidak valid. Pastikan Apps Script sudah di-deploy.'); }
+      if (!json.ok) throw new Error(json.error || 'Terjadi kesalahan pada server.');
+      return json.data;
+    }
+
+    function toast(title, icon = 'success') {
+      Swal.fire({ toast: true, position: 'top-end', icon, title, showConfirmButton: false, timer: 2800, timerProgressBar: true });
+    }
+
+    function esc(s) {
+      return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    }
+
+    function getInitials(name) {
+      const parts = String(name || 'U').trim().split(/\s+/);
+      return parts.length === 1 ? parts[0].slice(0,2).toUpperCase() : (parts[0][0] + parts[parts.length-1][0]).toUpperCase();
+    }
+
+    // =========================================================================
+    // 4. HAK AKSES CHECKER (ROLE + CUSTOM PER USER)
+    // =========================================================================
+    function isSuperAdmin() {
+      return currentUser && (currentUser.role === 'SUPER_ADMIN' || currentUser.isProtectedSuper);
+    }
+    function canSeeMenu(menuKey) {
+      if (!currentUser) return false;
+      if (isSuperAdmin()) return true;
+      if (menuKey === 'dashboard' || menuKey === 'keamanan') return true;
+      const p = currentUser.permissions || {};
+      return (p.menus || []).includes('ALL') || (p.menus || []).includes(menuKey);
+    }
+    function canSeeSubmenu(menuKey, subKey) {
+      if (!currentUser) return false;
+      if (isSuperAdmin()) return true;
+      if (!canSeeMenu(menuKey)) return false;
+      const p = currentUser.permissions || {};
+      const subs = p.submenus || [];
+      return subs.includes('ALL') || subs.includes(subKey);
+    }
+
+    // =========================================================================
+    // 5. AUTH, AUTO-LOGOUT 20 MENIT, & PEMULIHAN SUPER ADMIN
+    // =========================================================================
+    function togglePassVisibility() {
+      const inp = document.getElementById('loginPass');
+      const icon = document.getElementById('passEyeIcon');
+      if (inp.type === 'password') { inp.type = 'text'; icon.className = 'bi bi-eye-slash-fill'; }
+      else { inp.type = 'password'; icon.className = 'bi bi-eye-fill'; }
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const u = document.getElementById('loginUser').value.trim();
+      const p = document.getElementById('loginPass').value;
+      if (!u || !p) return;
+
+      showLoader('Memverifikasi Kredensial...');
+      try {
+        const res = await callCore('loginUser', u, p);
+        hideLoader();
+
+        if (res.status === 'success') {
+          currentUser = res.user;
+          appSettings = res.settings || appSettings;
+          saveSession();
+          document.getElementById('loginPass').value = '';
+          enterApp();
+          toast('Selamat datang, ' + currentUser.nama + '!');
+        } else if (res.status === 'wrong_super_pass') {
+          // HANYA MUNCUL JIKA USERNAME SUPER ADMIN BENAR TAPI PASSWORD SALAH (EMAIL TIDAK DITAMPILKAN)
+          Swal.fire({
+            icon: 'warning',
+            title: 'Password Salah',
+            html: '<p class="text-sm text-slate-600">Password untuk akun Super Admin tidak sesuai.<br/>Apakah Anda ingin mengirim password pemulihan baru ke <b>email terdaftar Super Admin</b>?</p>',
+            showCancelButton: true,
+            confirmButtonText: '<i class="bi bi-envelope-check-fill mr-1"></i> Kirim Password ke Email',
+            cancelButtonText: 'Coba Lagi',
+            confirmButtonColor: '#07192f',
+            cancelButtonColor: '#64748b'
+          }).then(async (ans) => {
+            if (ans.isConfirmed) {
+              showLoader('Mengirim Pemulihan ke Email...');
+              try {
+                const rec = await callCore('sendSuperAdminRecovery', u);
+                hideLoader();
+                Swal.fire({
+                  icon: rec.status === 'success' ? 'success' : 'error',
+                  title: rec.status === 'success' ? 'Email Terkirim' : 'Gagal',
+                  text: rec.message,
+                  confirmButtonColor: '#07192f'
+                });
+              } catch (err2) {
+                hideLoader();
+                Swal.fire('Gagal', err2.message, 'error');
+              }
+            }
+          });
+        } else {
+          Swal.fire({ icon: 'error', title: 'Login Gagal', text: res.message, confirmButtonColor: '#07192f' });
+        }
+      } catch (err) {
+        hideLoader();
+        Swal.fire({ icon: 'error', title: 'Koneksi Gagal', text: err.message, confirmButtonColor: '#07192f' });
+      }
+    }
+
+    function saveSession() {
+      lastActivityMs = Date.now();
+      localStorage.setItem(SESSION_KEY, JSON.stringify({ user: currentUser, lastActivity: lastActivityMs }));
+    }
+
+    function touchActivity() {
+      if (!currentUser) return;
+      lastActivityMs = Date.now();
+      try {
+        const raw = localStorage.getItem(SESSION_KEY);
+        if (raw) {
+          const obj = JSON.parse(raw);
+          obj.lastActivity = lastActivityMs;
+          localStorage.setItem(SESSION_KEY, JSON.stringify(obj));
+        }
+      } catch (e) {}
+    }
+
+    function startIdleMonitor() {
+      if (idleInterval) clearInterval(idleInterval);
+      idleInterval = setInterval(() => {
+        if (!currentUser) return;
+        const limitMs = (appSettings.idleTimeoutMinutes || 20) * 60 * 1000;
+        const elapsed = Date.now() - lastActivityMs;
+        const remain = Math.max(0, limitMs - elapsed);
+        const m = String(Math.floor(remain / 60000)).padStart(2, '0');
+        const s = String(Math.floor((remain % 60000) / 1000)).padStart(2, '0');
+        const el = document.getElementById('idleCountdown');
+        if (el) el.textContent = m + ':' + s;
+        if (elapsed >= limitMs) doLogout(true);
+      }, 1000);
+    }
+
+    function confirmLogout() {
+      Swal.fire({
+        title: 'Keluar dari BMN UNIMA?',
+        text: 'Sesi Anda akan diakhiri dengan aman.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        confirmButtonText: 'Ya, Keluar',
+        cancelButtonText: 'Batal'
+      }).then((r) => { if (r.isConfirmed) doLogout(false); });
+    }
+
+    function doLogout(isAuto) {
+      if (currentUser && !isAuto) {
+        callCore('writeExternalLog', currentUser.username, 'AUTH', 'LOGOUT', 'Keluar dari portal BMN UNIMA.').catch(() => {});
+      }
+      if (idleInterval) clearInterval(idleInterval);
+      if (chatTimer) clearInterval(chatTimer);
+      localStorage.removeItem(SESSION_KEY);
+      localStorage.removeItem('bastUser');
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('DBR_UNIMA_USER_V5');
+      localStorage.removeItem('CALBMN_UNIMA_SESSION_V1');
+      currentUser = null;
+      loadedIframes = {};
+      document.getElementById('moduleFramesHost').innerHTML = '';
+      document.getElementById('appShell').classList.add('hidden');
+      document.getElementById('chatFab').style.display = 'none';
+      document.getElementById('chatPanel').classList.remove('open');
+      document.getElementById('loginView').classList.remove('hidden');
+      updateUrlAndTitle('/login', 'Login | BMN UNIMA', true);
+
+      if (isAuto) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Sesi Berakhir Otomatis',
+          text: 'Tidak ada aktivitas selama 20 menit. Silakan login kembali.',
+          confirmButtonColor: '#07192f'
+        });
+      }
+    }
+
+    // =========================================================================
+    // 6. MASUK APLIKASI, RENDER SIDEBAR, DASHBOARD & ROUTING DINAMIS
+    // =========================================================================
+    function enterApp() {
+      document.getElementById('loginView').classList.add('hidden');
+      document.getElementById('appShell').classList.remove('hidden');
+
+      document.getElementById('sidebarAvatar').textContent = getInitials(currentUser.nama);
+      document.getElementById('sidebarUserName').textContent = currentUser.nama;
+      document.getElementById('sidebarUserRole').textContent = currentUser.role;
+      document.getElementById('dashHeroName').textContent = currentUser.nama;
+
+      if (isSuperAdmin()) {
+        document.getElementById('superMaintenanceBox').classList.remove('hidden');
+        document.getElementById('btnClearLogs').classList.remove('hidden');
+        document.getElementById('chatSuperTabs').classList.remove('hidden');
+        updateMaintenanceBtnUI();
+      } else {
+        document.getElementById('superMaintenanceBox').classList.add('hidden');
+        document.getElementById('btnClearLogs').classList.add('hidden');
+        document.getElementById('chatSuperTabs').classList.add('hidden');
+      }
+
+      renderSidebar();
+      renderDashboardCards();
+      startIdleMonitor();
+      initChatEngine();
+
+      // Buka route sesuai URL saat ini (atau dashboard jika dari / atau /login)
+      resolveInitialRoute();
+    }
+
+    function updateMaintenanceBtnUI() {
+      const btn = document.getElementById('btnToggleSystem');
+      if (!btn) return;
+      if (appSettings.isActive) {
+        btn.textContent = 'AKTIF';
+        btn.className = 'px-2.5 py-1 rounded-lg text-[10px] font-extrabold bg-emerald-500 text-slate-950';
+      } else {
+        btn.textContent = 'MAINTENANCE';
+        btn.className = 'px-2.5 py-1 rounded-lg text-[10px] font-extrabold bg-rose-500 text-white';
+      }
+    }
+
+    async function handleToggleMaintenance() {
+      const willActivate = !appSettings.isActive;
+      const ans = await Swal.fire({
+        title: willActivate ? 'Aktifkan Sistem BMN UNIMA?' : 'Nonaktifkan Sistem (Maintenance)?',
+        input: willActivate ? undefined : 'textarea',
+        inputValue: appSettings.maintenanceMsg || 'Sistem BMN UNIMA sedang dalam pemeliharaan rutin.',
+        icon: willActivate ? 'question' : 'warning',
+        showCancelButton: true,
+        confirmButtonColor: willActivate ? '#10b981' : '#dc2626',
+        confirmButtonText: willActivate ? 'Ya, Aktifkan' : 'Nonaktifkan'
+      });
+      if (!ans.isConfirmed) return;
+
+      showLoader('Memperbarui Status Sistem...');
+      try {
+        await callCore('setMaintenanceStatus', currentUser.username, willActivate, ans.value || '');
+        appSettings.isActive = willActivate;
+        if (ans.value) appSettings.maintenanceMsg = ans.value;
+        updateMaintenanceBtnUI();
+        hideLoader();
+        toast(willActivate ? 'Sistem berhasil diaktifkan.' : 'Mode Maintenance diaktifkan.');
+      } catch (err) {
+        hideLoader();
+        Swal.fire('Gagal', err.message, 'error');
+      }
+    }
+
+    function renderSidebar() {
+      const nav = document.getElementById('sidebarNav');
+      let html = `
+        <button onclick="openPortalPage('dashboard')" id="nav-dashboard"
+          class="menu-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-200 hover:bg-white/10 transition">
+          <i class="bi bi-speedometer2 text-amber-400 text-sm"></i><span>Dashboard Utama</span>
+        </button>
+        <div class="pt-2 pb-1 px-3 text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Modul Aplikasi BMN</div>
+      `;
+
+      MENU_CATALOG.forEach(mod => {
+        if (!canSeeMenu(mod.key)) return;
+        const visibleSubs = mod.submenus.filter(s => canSeeSubmenu(mod.key, s.key));
+        if (visibleSubs.length === 0) return;
+
+        const isOpen = Boolean(openAccordion[mod.key]);
+        html += `
+          <div class="space-y-1">
+            <button onclick="toggleSidebarGroup('${mod.key}')" id="nav-mod-${mod.key}"
+              class="menu-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-100 hover:bg-white/10 transition">
+              <span class="flex items-center gap-2.5 truncate">
+                <i class="bi ${mod.icon} text-amber-400 text-sm"></i>
+                <span class="truncate">${mod.label}</span>
+              </span>
+              <i id="chev-${mod.key}" class="bi bi-chevron-down text-[10px] transition-transform ${isOpen ? 'rotate-180' : ''}"></i>
+            </button>
+            <div id="subwrap-${mod.key}" class="${isOpen ? '' : 'hidden'} pl-4 space-y-0.5 border-l border-white/15 ml-4">
+              ${visibleSubs.map(s => `
+                <button onclick="openModuleSubmenu('${mod.key}', '${s.sub}')" id="subbtn-${mod.key}-${s.sub}"
+                  class="submenu-btn w-full text-left px-3 py-2 rounded-lg text-[11px] text-slate-300 hover:bg-white/10 hover:text-white transition truncate">
+                  ${s.label}
+                </button>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      });
+
+      html += `<div class="pt-3 pb-1 px-3 text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Administrasi & Sistem</div>`;
+
+      SYSTEM_MENUS.forEach(sm => {
+        if (!canSeeMenu(sm.key)) return;
+        html += `
+          <button onclick="openPortalPage('${sm.key}')" id="nav-${sm.key}"
+            class="menu-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-200 hover:bg-white/10 transition">
+            <i class="bi ${sm.icon} text-amber-400 text-sm"></i><span>${sm.label}</span>
+          </button>
+        `;
+      });
+
+      nav.innerHTML = html;
+      highlightActiveNav();
+    }
+
+    function toggleSidebarGroup(modKey) {
+      openAccordion[modKey] = !openAccordion[modKey];
+      const wrap = document.getElementById('subwrap-' + modKey);
+      const chev = document.getElementById('chev-' + modKey);
+      if (wrap) wrap.classList.toggle('hidden', !openAccordion[modKey]);
+      if (chev) chev.classList.toggle('rotate-180', openAccordion[modKey]);
+    }
+
+    function renderDashboardCards() {
+      const grid = document.getElementById('dashModuleCards');
+      const quick = document.getElementById('dashQuickActions');
+      let cardsHtml = '';
+      let quickHtml = '';
+
+      MENU_CATALOG.forEach(mod => {
+        if (!canSeeMenu(mod.key)) return;
+        const subs = mod.submenus.filter(s => canSeeSubmenu(mod.key, s.key));
+        if (subs.length === 0) return;
+
+        const firstSub = subs[0];
+        quickHtml += `
+          <button onclick="openModuleSubmenu('${mod.key}', '${firstSub.sub}')"
+            class="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-amber-400 hover:text-slate-950 border border-white/15 text-xs font-bold transition flex items-center gap-1.5">
+            <i class="bi ${mod.icon}"></i><span>${mod.label}</span>
+          </button>`;
+
+        cardsHtml += `
+          <div onclick="openModuleSubmenu('${mod.key}', '${firstSub.sub}')"
+            class="group cursor-pointer bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition flex flex-col justify-between">
+            <div>
+              <div class="w-12 h-12 rounded-2xl bg-gradient-to-br ${mod.color} text-white flex items-center justify-center text-xl shadow-md group-hover:scale-105 transition">
+                <i class="bi ${mod.icon}"></i>
+              </div>
+              <h5 class="text-base font-extrabold text-slate-900 mt-4">${mod.label}</h5>
+              <p class="text-xs text-slate-500 mt-1 leading-relaxed">${mod.desc}</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-blue-900">
+              <span>${subs.length} Submenu Aktif</span>
+              <span class="group-hover:translate-x-1 transition">Buka <i class="bi bi-arrow-right"></i></span>
+            </div>
+          </div>`;
+      });
+
+      grid.innerHTML = cardsHtml || '<div class="col-span-4 p-8 text-center bg-white rounded-2xl border text-xs text-slate-500">Belum ada modul yang diaktifkan untuk akun Anda. Hubungi Super Admin.</div>';
+      quick.innerHTML = quickHtml;
+    }
+
+    function updateUrlAndTitle(path, title, replace = false) {
+      document.title = title;
+      if (window.location.pathname !== path) {
+        if (replace) history.replaceState({ path }, title, path);
+        else history.pushState({ path }, title, path);
+      }
+    }
+
+    function highlightActiveNav() {
+      document.querySelectorAll('.menu-btn, .submenu-btn').forEach(b => b.classList.remove('active'));
+      if (activeRoute.type === 'module') {
+        const mBtn = document.getElementById('nav-mod-' + activeRoute.menu);
+        const sBtn = document.getElementById('subbtn-' + activeRoute.menu + '-' + activeRoute.sub);
+        if (mBtn) mBtn.classList.add('active');
+        if (sBtn) sBtn.classList.add('active');
+      } else {
+        const btn = document.getElementById('nav-' + activeRoute.menu);
+        if (btn) btn.classList.add('active');
+      }
+    }
+
+    function openPortalPage(pageKey, push = true) {
+      if (!canSeeMenu(pageKey)) {
+        toast('Anda tidak memiliki izin membuka menu ini.', 'error');
+        return;
+      }
+      toggleMobileSidebar(false);
+      document.querySelectorAll('.portal-view').forEach(v => v.classList.add('hidden'));
+      const targetEl = document.getElementById('view-' + pageKey);
+      if (targetEl) targetEl.classList.remove('hidden');
+
+      activeRoute = { type: 'portal', menu: pageKey, sub: '' };
+      highlightActiveNav();
+
+      const info = {
+        dashboard:   { title: 'Dashboard Utama',         slug: '/dashboard',            tab: 'Dashboard | BMN UNIMA' },
+        users_roles: { title: 'Pengaturan User & Role',  slug: '/pengaturan/user-role', tab: 'User & Role | BMN UNIMA' },
+        logs:        { title: 'Log Aktivitas Sistem',    slug: '/log-aktivitas',        tab: 'Log Aktivitas | BMN UNIMA' },
+        keamanan:    { title: 'Keamanan Akun',           slug: '/keamanan-akun',        tab: 'Keamanan Akun | BMN UNIMA' }
+      }[pageKey] || { title: 'Dashboard', slug: '/dashboard', tab: 'BMN UNIMA' };
+
+      document.getElementById('topBreadcrumb').textContent = 'BMN UNIMA • PORTAL';
+      document.getElementById('topPageTitle').textContent = info.title;
+      updateUrlAndTitle(info.slug, info.tab, !push);
+
+      if (pageKey === 'users_roles') loadUsersAndRoles();
+      if (pageKey === 'logs') loadLogsFromServer();
+    }
+
+    function openModuleSubmenu(modKey, subName, push = true) {
+      const mod = MENU_CATALOG.find(m => m.key === modKey);
+      if (!mod) return;
+      const subObj = mod.submenus.find(s => s.sub === subName);
+      if (!subObj || !canSeeSubmenu(modKey, subObj.key)) {
+        toast('Anda tidak memiliki izin mengakses submenu ini.', 'error');
+        return;
+      }
+
+      toggleMobileSidebar(false);
+      openAccordion[modKey] = true;
+      const wrap = document.getElementById('subwrap-' + modKey);
+      const chev = document.getElementById('chev-' + modKey);
+      if (wrap) wrap.classList.remove('hidden');
+      if (chev) chev.classList.add('rotate-180');
+
+      document.querySelectorAll('.portal-view').forEach(v => v.classList.add('hidden'));
+      document.getElementById('view-module').classList.remove('hidden');
+
+      activeRoute = { type: 'module', menu: modKey, sub: subName };
+      highlightActiveNav();
+
+      document.getElementById('topBreadcrumb').textContent = 'BMN UNIMA • ' + mod.label.toUpperCase();
+      document.getElementById('topPageTitle').textContent = subObj.label;
+      updateUrlAndTitle(subObj.slug, `${subObj.label} — ${mod.label} | BMN UNIMA`, !push);
+
+      // Sembunyikan semua iframe modul lain, tampilkan modul aktif (cached -> super cepat!)
+      const host = document.getElementById('moduleFramesHost');
+      Array.from(host.querySelectorAll('iframe')).forEach(f => f.classList.add('hidden'));
+
+      if (!loadedIframes[modKey]) {
+        showLoader('Membuka ' + mod.label + '...');
+        const iframe = document.createElement('iframe');
+        iframe.id = 'frame-' + modKey;
+        iframe.src = `${mod.moduleFile}?mod=${encodeURIComponent(modKey)}&sub=${encodeURIComponent(subName)}`;
+        iframe.className = 'w-full h-[calc(100vh-64px)] border-0 block bg-white';
+        iframe.onload = () => setTimeout(hideLoader, 450);
+        host.appendChild(iframe);
+        loadedIframes[modKey] = iframe;
+      } else {
+        loadedIframes[modKey].classList.remove('hidden');
+        loadedIframes[modKey].contentWindow.postMessage({ type: 'BMN_PORTAL_NAV', sub: subName }, '*');
+      }
+
+      callCore('writeExternalLog', currentUser.username, mod.label, 'BUKA_SUBMENU', 'Membuka ' + subObj.label).catch(() => {});
+    }
+
+    function resolveInitialRoute() {
+      const path = window.location.pathname.replace(/\/+$/, '') || '/dashboard';
+      if (path === '/pengaturan/user-role') return openPortalPage('users_roles', false);
+      if (path === '/log-aktivitas') return openPortalPage('logs', false);
+      if (path === '/keamanan-akun') return openPortalPage('keamanan', false);
+
+      for (const mod of MENU_CATALOG) {
+        const sub = mod.submenus.find(s => s.slug === path);
+        if (sub && canSeeSubmenu(mod.key, sub.key)) {
+          return openModuleSubmenu(mod.key, sub.sub, false);
+        }
+      }
+      openPortalPage('dashboard', false);
+    }
+
+    function refreshCurrentView() {
+      if (activeRoute.type === 'module' && loadedIframes[activeRoute.menu]) {
+        showLoader('Menyegarkan Modul...');
+        loadedIframes[activeRoute.menu].contentWindow.location.reload();
+      } else {
+        openPortalPage(activeRoute.menu, false);
+      }
+    }
+
+    function toggleMobileSidebar(show) {
+      const sb = document.getElementById('mainSidebar');
+      const bd = document.getElementById('sidebarBackdrop');
+      sb.classList.toggle('-translate-x-full', !show);
+      bd.classList.toggle('hidden', !show);
+    }
+
+    // =========================================================================
+    // 7. JAM DIGITAL WITA (REAL-TIME)
+    // =========================================================================
+    function startDigitalClock() {
+      const hari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+      const bulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+      function tick() {
+        const now = new Date();
+        const wita = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Makassar' }));
+        const hh = String(wita.getHours()).padStart(2, '0');
+        const mm = String(wita.getMinutes()).padStart(2, '0');
+        const ss = String(wita.getSeconds()).padStart(2, '0');
+        const elT = document.getElementById('dashClockTime');
+        const elD = document.getElementById('dashClockDate');
+        if (elT) elT.textContent = `${hh}:${mm}:${ss}`;
+        if (elD) elD.textContent = `${hari[wita.getDay()]}, ${wita.getDate()} ${bulan[wita.getMonth()]} ${wita.getFullYear()}`;
+      }
+      tick();
+      setInterval(tick, 1000);
+    }
+
+    // =========================================================================
+    // 8. PENGATURAN USER, ROLE & HAK AKSES GRANULAR
+    // =========================================================================
+    function switchURTab(tab) {
+      const isU = tab === 'users';
+      document.getElementById('urPanelUsers').classList.toggle('hidden', !isU);
+      document.getElementById('urPanelRoles').classList.toggle('hidden', isU);
+      document.getElementById('urTabBtnUsers').className = isU ? 'px-4 py-2 rounded-xl ministry-gradient text-white text-xs font-bold' : 'px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold';
+      document.getElementById('urTabBtnRoles').className = !isU ? 'px-4 py-2 rounded-xl ministry-gradient text-white text-xs font-bold' : 'px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold';
+    }
+
+    async function loadUsersAndRoles() {
+      showLoader('Memuat Data User & Role...');
+      try {
+        const res = await callCore('getUsersAndRoles', currentUser.username);
+        usersCache = res.users || [];
+        rolesCache = res.roles || [];
+        renderUsersTable();
+        renderRolesGrid();
+        hideLoader();
+      } catch (err) {
+        hideLoader();
+        Swal.fire('Gagal', err.message, 'error');
+      }
+    }
+
+    function renderUsersTable() {
+      const q = (document.getElementById('searchUsersInput')?.value || '').trim().toLowerCase();
+      const tbody = document.getElementById('usersTableBody');
+      const filtered = usersCache.filter(u => !q || (u.username + ' ' + u.nama + ' ' + u.role).toLowerCase().includes(q));
+
+      if (!filtered.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="py-8 text-center text-slate-400">Tidak ada data user.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(u => {
+        const isProt = u.isProtectedSuper;
+        const statusBadge = u.status === 'ACTIVE'
+          ? '<span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800">AKTIF</span>'
+          : '<span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-rose-100 text-rose-800">NONAKTIF</span>';
+        const permBadge = isProt
+          ? '<span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-amber-100 text-amber-900">Akses Penuh</span>'
+          : (u.hasCustomPerms
+              ? '<span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-purple-100 text-purple-800"><i class="bi bi-sliders mr-1"></i>Kustom User</span>'
+              : '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700">Ikuti Role</span>');
+
+        return `
+          <tr class="hover:bg-slate-50">
+            <td class="py-3 px-4 font-mono-tech font-bold text-blue-950">${esc(u.username)}</td>
+            <td class="py-3 px-4"><p class="font-bold text-slate-800">${esc(u.nama)}</p><p class="text-[11px] text-slate-400">NIP. ${esc(u.nip || '-')}</p></td>
+            <td class="py-3 px-4"><span class="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-900 font-bold text-[11px]">${esc(u.role)}</span></td>
+            <td class="py-3 px-4">${permBadge}</td>
+            <td class="py-3 px-4 text-center">${statusBadge}</td>
+            <td class="py-3 px-4 text-right">
+              <div class="inline-flex flex-wrap justify-end gap-1.5">
+                <button onclick="openUserFormModal('${esc(u.username)}')" class="px-2.5 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold" title="Edit Profil/Role">
+                  <i class="bi bi-pencil-fill"></i>
+                </button>
+                ${!isProt ? `
+                  <button onclick="openUserCustomPermModal('${esc(u.username)}')" class="px-2.5 py-1.5 rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-800 font-bold" title="Atur Menu, Submenu & Tombol Khusus User">
+                    <i class="bi bi-sliders"></i> Akses
+                  </button>
+                  <button onclick="handleResetPassword('${esc(u.username)}')" class="px-2.5 py-1.5 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-800 font-bold" title="Reset Password ke 123456">
+                    <i class="bi bi-key-fill"></i>
+                  </button>
+                  <button onclick="handleToggleUserStatus('${esc(u.username)}', '${esc(u.status)}')" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold" title="${u.status === 'ACTIVE' ? 'Nonaktifkan' : 'Aktifkan'}">
+                    <i class="bi ${u.status === 'ACTIVE' ? 'bi-pause-circle-fill text-rose-600' : 'bi-play-circle-fill text-emerald-600'}"></i>
+                  </button>
+                  <button onclick="handleDeleteUser('${esc(u.username)}')" class="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold" title="Hapus User">
+                    <i class="bi bi-trash3-fill"></i>
+                  </button>
+                ` : '<span class="text-[10px] text-slate-400 italic px-2 py-1">Dilindungi</span>'}
+              </div>
+            </td>
+          </tr>`;
+      }).join('');
+    }
+
+    function renderRolesGrid() {
+      const grid = document.getElementById('rolesGrid');
+      grid.innerHTML = rolesCache.map(r => `
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between space-y-4">
+          <div>
+            <div class="flex items-center justify-between gap-2">
+              <span class="px-3 py-1 rounded-xl ministry-gradient text-amber-300 font-extrabold text-xs">${esc(r.name)}</span>
+              ${r.isSystem ? '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">SISTEM</span>' : ''}
+            </div>
+            <p class="text-xs text-slate-500 mt-2.5">${esc(r.description || 'Role kustom BMN UNIMA')}</p>
+            <div class="mt-3 flex flex-wrap gap-1">
+              ${(r.actions || []).map(a => `<span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-bold uppercase">${esc(a)}</span>`).join('')}
+            </div>
+          </div>
+          ${!r.isSystem ? `
+            <div class="pt-3 border-t border-slate-100 flex gap-2">
+              <button onclick="openRoleEditorModal('${esc(r.name)}')" class="flex-1 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-900 font-bold text-xs">
+                <i class="bi bi-sliders mr-1"></i>Edit Akses Role
+              </button>
+              <button onclick="handleDeleteRole('${esc(r.name)}')" class="px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-xs">
+                <i class="bi bi-trash3-fill"></i>
+              </button>
+            </div>
+          ` : '<div class="pt-3 border-t border-slate-100 text-[11px] text-slate-400 italic">Role utama tidak dapat diubah/dihapus.</div>'}
+        </div>
+      `).join('');
+    }
+
+    async function openUserFormModal(editUsername) {
+      const existing = editUsername ? usersCache.find(u => u.username === editUsername) : null;
+      const selectableRoles = rolesCache.filter(r => r.name !== 'SUPER_ADMIN');
+      if (!existing && selectableRoles.length === 0) {
+        Swal.fire({ icon: 'info', title: 'Buat Role Terlebih Dahulu', text: 'Belum ada role selain SUPER_ADMIN. Silakan buat minimal 1 role di tab "Daftar Role" terlebih dahulu.', confirmButtonColor: '#07192f' });
+        return;
+      }
+
+      const roleOptions = existing && existing.isProtectedSuper
+        ? '<option value="SUPER_ADMIN" selected>SUPER_ADMIN</option>'
+        : selectableRoles.map(r => `<option value="${esc(r.name)}" ${existing && existing.role === r.name ? 'selected' : ''}>${esc(r.name)}</option>`).join('');
+
+      const res = await Swal.fire({
+        title: existing ? 'Edit User: ' + existing.username : 'Tambah User Baru',
+        html: `
+          <div class="text-left space-y-3 text-xs pt-2">
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Username</label>
+              <input id="swUname" value="${esc(existing ? existing.username : '')}" ${existing ? 'disabled' : ''} placeholder="tanpa spasi" class="w-full px-3 py-2.5 border rounded-xl ${existing ? 'bg-slate-100' : ''}" />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Nama Lengkap</label>
+              <input id="swNama" value="${esc(existing ? existing.nama : '')}" placeholder="Nama lengkap pegawai" class="w-full px-3 py-2.5 border rounded-xl" />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">NIP</label>
+              <input id="swNip" value="${esc(existing ? existing.nip : '')}" placeholder="NIP (opsional)" class="w-full px-3 py-2.5 border rounded-xl" />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Role</label>
+              <select id="swRole" ${existing && existing.isProtectedSuper ? 'disabled' : ''} class="w-full px-3 py-2.5 border rounded-xl">${roleOptions}</select>
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">${existing ? 'Password Baru (Kosongkan jika tidak diubah)' : 'Password Awal (Min 5 karakter)'}</label>
+              <input id="swPass" type="password" placeholder="${existing ? '••••••••' : 'Minimal 5 karakter'}" class="w-full px-3 py-2.5 border rounded-xl" />
+            </div>
+          </div>
+        `,
+        showCancelButton: true,
+        confirmButtonColor: '#07192f',
+        confirmButtonText: 'Simpan User',
+        cancelButtonText: 'Batal',
+        preConfirm: () => {
+          const username = document.getElementById('swUname').value.trim();
+          const nama = document.getElementById('swNama').value.trim();
+          const nip = document.getElementById('swNip').value.trim() || '-';
+          const role = document.getElementById('swRole').value;
+          const password = document.getElementById('swPass').value.trim();
+          if (!username || !nama || !role) { Swal.showValidationMessage('Username, Nama, dan Role wajib diisi.'); return false; }
+          if (!existing && password.length < 5) { Swal.showValidationMessage('Password awal minimal 5 karakter.'); return false; }
+          return { isEdit: Boolean(existing), username, nama, nip, role, password };
+        }
+      });
+
+      if (!res.isConfirmed) return;
+      showLoader('Menyimpan Data User...');
+      try {
+        const data = await callCore('saveUser', currentUser.username, res.value);
+        usersCache = data.users;
+        rolesCache = data.roles;
+        renderUsersTable();
+        hideLoader();
+        toast('Data user berhasil disimpan.');
+      } catch (err) {
+        hideLoader();
+        Swal.fire('Gagal', err.message, 'error');
+      }
+    }
+
+    async function handleToggleUserStatus(uname, curStatus) {
+      const nextLbl = curStatus === 'ACTIVE' ? 'Nonaktifkan' : 'Aktifkan';
+      const c = await Swal.fire({
+        title: `${nextLbl} akun "${uname}"?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: curStatus === 'ACTIVE' ? '#dc2626' : '#10b981',
+        confirmButtonText: 'Ya, ' + nextLbl
+      });
+      if (!c.isConfirmed) return;
+      showLoader('Memperbarui Status User...');
+      try {
+        const data = await callCore('toggleUserStatus', currentUser.username, uname);
+        usersCache = data.users;
+        renderUsersTable();
+        hideLoader();
+        toast('Status user diperbarui.');
+      } catch (err) { hideLoader(); Swal.fire('Gagal', err.message, 'error'); }
+    }
+
+    async function handleResetPassword(uname) {
+      const c = await Swal.fire({
+        title: `Reset password "${uname}"?`,
+        html: 'Password akan direset menjadi default <b>123456</b> (terenkripsi SHA-256).',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#07192f',
+        confirmButtonText: 'Ya, Reset ke 123456'
+      });
+      if (!c.isConfirmed) return;
+      showLoader('Mereset Password...');
+      try {
+        const res = await callCore('resetUserPassword', currentUser.username, uname);
+        usersCache = res.data.users;
+        renderUsersTable();
+        hideLoader();
+        Swal.fire({ icon: 'success', title: 'Password Direset', text: res.message, confirmButtonColor: '#07192f' });
+      } catch (err) { hideLoader(); Swal.fire('Gagal', err.message, 'error'); }
+    }
+
+    async function handleDeleteUser(uname) {
+      const c = await Swal.fire({
+        title: `Hapus user "${uname}"?`,
+        text: 'Akun ini akan dihapus permanen dari database BMN UNIMA.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        confirmButtonText: 'Ya, Hapus Permanen'
+      });
+      if (!c.isConfirmed) return;
+      showLoader('Menghapus User...');
+      try {
+        const data = await callCore('deleteUser', currentUser.username, uname);
+        usersCache = data.users;
+        renderUsersTable();
+        hideLoader();
+        toast('User berhasil dihapus.');
+      } catch (err) { hideLoader(); Swal.fire('Gagal', err.message, 'error'); }
+    }
+
+    async function handleDeleteRole(roleName) {
+      const c = await Swal.fire({
+        title: `Hapus role "${roleName}"?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        confirmButtonText: 'Ya, Hapus Role'
+      });
+      if (!c.isConfirmed) return;
+      showLoader('Menghapus Role...');
+      try {
+        const data = await callCore('deleteRole', currentUser.username, roleName);
+        rolesCache = data.roles;
+        renderRolesGrid();
+        hideLoader();
+        toast('Role berhasil dihapus.');
+      } catch (err) { hideLoader(); Swal.fire('Gagal', err.message, 'error'); }
+    }
+
+    // --- MODAL PERMISSION EDITOR (UNTUK ROLE & CUSTOM PER USER) ---
+    function buildPermModalBody(selectedMenus, selectedSubs, selectedActions) {
+      const allMenus = selectedMenus.includes('ALL');
+      const allSubs = selectedSubs.includes('ALL');
+
+      document.getElementById('permActionsGrid').innerHTML = ACTION_DEFS.map(a => `
+        <label class="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-slate-200 cursor-pointer hover:border-blue-800">
+          <input type="checkbox" class="permActionCb w-4 h-4 accent-blue-900" value="${a.key}" ${selectedActions.includes(a.key) ? 'checked' : ''} />
+          <span class="font-semibold text-slate-700">${a.label}</span>
+        </label>
+      `).join('');
+
+      let mHtml = '';
+      MENU_CATALOG.forEach(mod => {
+        const modChecked = allMenus || selectedMenus.includes(mod.key);
+        mHtml += `
+          <div class="p-3.5 rounded-xl bg-white border border-slate-200 space-y-2.5">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+              <label class="flex items-center gap-2 font-extrabold text-blue-950 cursor-pointer">
+                <input type="checkbox" class="permMenuCb w-4 h-4 accent-blue-900" value="${mod.key}" ${modChecked ? 'checked' : ''}
+                  onchange="toggleModuleSubCheckboxes('${mod.key}', this.checked)" />
+                <i class="bi ${mod.icon} text-amber-600"></i>
+                <span>Menu Utama: ${mod.label}</span>
+              </label>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 pl-2">
+              ${mod.submenus.map(s => `
+                <label class="flex items-center gap-2 text-[11px] text-slate-700 cursor-pointer">
+                  <input type="checkbox" class="permSubCb permSub-${mod.key} w-3.5 h-3.5 accent-amber-600" value="${s.key}" ${allSubs || selectedSubs.includes(s.key) ? 'checked' : ''} />
+                  <span>${s.label}</span>
+                </label>
+              `).join('')}
+            </div>
+          </div>`;
+      });
+
+      // Menu Sistem (User & Role, Log)
+      mHtml += `
+        <div class="p-3.5 rounded-xl bg-white border border-slate-200 space-y-2">
+          <p class="font-extrabold text-slate-800">Menu Administrasi Sistem</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" class="permMenuCb w-4 h-4 accent-blue-900" value="users_roles" ${allMenus || selectedMenus.includes('users_roles') ? 'checked' : ''} />
+              <span>Pengaturan User & Role</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" class="permMenuCb w-4 h-4 accent-blue-900" value="logs" ${allMenus || selectedMenus.includes('logs') ? 'checked' : ''} />
+              <span>Log Aktivitas</span>
+            </label>
+          </div>
+        </div>`;
+
+      document.getElementById('permMenusContainer').innerHTML = mHtml;
+    }
+
+    function toggleModuleSubCheckboxes(modKey, checked) {
+      document.querySelectorAll('.permSub-' + modKey).forEach(cb => cb.checked = checked);
+    }
+    function togglePermGroup(cls, checked) {
+      document.querySelectorAll('.' + cls).forEach(cb => cb.checked = checked);
+    }
+
+    function openRoleEditorModal(roleName) {
+      const role = roleName ? rolesCache.find(r => r.name === roleName) : null;
+      permModalContext = { mode: 'role', target: roleName };
+      document.getElementById('permModalTitle').textContent = role ? 'Edit Role: ' + role.name : 'Buat Role Baru';
+      document.getElementById('permModalSub').textContent = 'Tentukan menu, submenu, dan hak tombol default untuk role ini.';
+      document.getElementById('permRoleMetaFields').classList.remove('hidden');
+      document.getElementById('btnResetUserToRole').classList.add('hidden');
+
+      const nameInp = document.getElementById('permRoleName');
+      nameInp.value = role ? role.name : '';
+      nameInp.disabled = Boolean(role);
+      document.getElementById('permRoleDesc').value = role ? role.description : '';
+
+      buildPermModalBody(
+        role ? role.menus : [],
+        role ? role.submenus : [],
+        role ? role.actions : ['view', 'download', 'print']
+      );
+      document.getElementById('permModal').classList.remove('hidden');
+      document.getElementById('permModal').classList.add('flex');
+    }
+
+    function openUserCustomPermModal(username) {
+      const u = usersCache.find(x => x.username === username);
+      if (!u) return;
+      permModalContext = { mode: 'user', target: username };
+      document.getElementById('permModalTitle').textContent = 'Hak Akses Khusus User: ' + u.nama;
+      document.getElementById('permModalSub').textContent = `Username: ${u.username} • Role: ${u.role} (Pengaturan ini mengesampingkan default role khusus untuk user ini)`;
+      document.getElementById('permRoleMetaFields').classList.add('hidden');
+      document.getElementById('btnResetUserToRole').classList.toggle('hidden', !u.hasCustomPerms);
+
+      const curP = u.hasCustomPerms && u.customPerms ? u.customPerms : u.permissions;
+      buildPermModalBody(curP.menus || [], curP.submenus || [], curP.actions || []);
+      document.getElementById('permModal').classList.remove('hidden');
+      document.getElementById('permModal').classList.add('flex');
+    }
+
+    function closePermModal() {
+      document.getElementById('permModal').classList.add('hidden');
+      document.getElementById('permModal').classList.remove('flex');
+    }
+
+    async function savePermModalData() {
+      const menus = Array.from(document.querySelectorAll('.permMenuCb:checked')).map(c => c.value);
+      const submenus = Array.from(document.querySelectorAll('.permSubCb:checked')).map(c => c.value);
+      const actions = Array.from(document.querySelectorAll('.permActionCb:checked')).map(c => c.value);
+
+      if (permModalContext.mode === 'role') {
+        const rName = document.getElementById('permRoleName').value.trim().toUpperCase();
+        const rDesc = document.getElementById('permRoleDesc').value.trim();
+        if (!rName) return Swal.fire('Perhatian', 'Nama Role wajib diisi.', 'warning');
+
+        showLoader('Menyimpan Konfigurasi Role...');
+        try {
+          const data = await callCore('saveRole', currentUser.username, { name: rName, description: rDesc, menus, submenus, actions });
+          usersCache = data.users;
+          rolesCache = data.roles;
+          renderRolesGrid();
+          closePermModal();
+          hideLoader();
+          toast('Role berhasil disimpan.');
+        } catch (err) { hideLoader(); Swal.fire('Gagal', err.message, 'error'); }
+      } else {
+        showLoader('Menyimpan Hak Akses Khusus User...');
+        try {
+          const data = await callCore('saveUserCustomPerms', currentUser.username, permModalContext.target, { menus, submenus, actions });
+          usersCache = data.users;
+          renderUsersTable();
+          closePermModal();
+          hideLoader();
+          toast('Hak akses khusus user tersimpan.');
+        } catch (err) { hideLoader(); Swal.fire('Gagal', err.message, 'error'); }
+      }
+    }
+
+    async function resetCurrentUserPermsToRole() {
+      showLoader('Mengembalikan ke Default Role...');
+      try {
+        const data = await callCore('saveUserCustomPerms', currentUser.username, permModalContext.target, null);
+        usersCache = data.users;
+        renderUsersTable();
+        closePermModal();
+        hideLoader();
+        toast('Hak akses user dikembalikan ke default Role.');
+      } catch (err) { hideLoader(); Swal.fire('Gagal', err.message, 'error'); }
+    }
+
+    // =========================================================================
+    // 9. LOG AKTIVITAS & KEAMANAN AKUN
+    // =========================================================================
+    async function loadLogsFromServer() {
+      showLoader('Memuat Log Aktivitas...');
+      try {
+        logsCache = await callCore('getLogs', currentUser.username);
+        renderLogsTable();
+        hideLoader();
+      } catch (err) { hideLoader(); Swal.fire('Gagal', err.message, 'error'); }
+    }
+
+    function renderLogsTable() {
+      const q = (document.getElementById('logSearchInput')?.value || '').trim().toLowerCase();
+      const tbody = document.getElementById('logsTableBody');
+      const list = logsCache.filter(l => !q || (l.nama + ' ' + l.username + ' ' + l.modul + ' ' + l.aksi + ' ' + l.detail).toLowerCase().includes(q));
+      if (!list.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="py-8 text-center text-slate-400">Belum ada catatan aktivitas.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = list.map(l => `
+        <tr class="hover:bg-slate-50">
+          <td class="py-2.5 px-4 font-mono-tech text-[11px] text-slate-500 whitespace-nowrap">${esc(l.timestamp)}</td>
+          <td class="py-2.5 px-4 font-bold text-slate-800">${esc(l.nama)} <span class="font-normal text-slate-400">(${esc(l.username)})</span></td>
+          <td class="py-2.5 px-4"><span class="px-2 py-0.5 rounded bg-slate-100 text-[10px] font-bold">${esc(l.role)}</span></td>
+          <td class="py-2.5 px-4 font-bold text-blue-900">${esc(l.modul)}</td>
+          <td class="py-2.5 px-4"><span class="px-2 py-0.5 rounded bg-amber-50 text-amber-800 font-mono-tech text-[10px] font-bold">${esc(l.aksi)}</span></td>
+          <td class="py-2.5 px-4 text-slate-600">${esc(l.detail)}</td>
+        </tr>
+      `).join('');
+    }
+
+    async function confirmClearLogs() {
+      const c = await Swal.fire({
+        title: 'Bersihkan seluruh Log Aktivitas?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        confirmButtonText: 'Ya, Bersihkan'
+      });
+      if (!c.isConfirmed) return;
+      showLoader('Membersihkan Log...');
+      try {
+        await callCore('clearLogs', currentUser.username);
+        await loadLogsFromServer();
+        toast('Log aktivitas dibersihkan.');
+      } catch (err) { hideLoader(); Swal.fire('Gagal', err.message, 'error'); }
+    }
+
+    async function handleChangeOwnPassword(e) {
+      e.preventDefault();
+      const oldP = document.getElementById('ownOldPass').value;
+      const newP = document.getElementById('ownNewPass').value;
+      const confP = document.getElementById('ownConfirmPass').value;
+      if (newP !== confP) return Swal.fire('Tidak Cocok', 'Konfirmasi password baru tidak sama.', 'warning');
+
+      showLoader('Memperbarui Password...');
+      try {
+        const res = await callCore('changeOwnPassword', currentUser.username, oldP, newP);
+        hideLoader();
+        if (res.status === 'success') {
+          document.getElementById('ownOldPass').value = '';
+          document.getElementById('ownNewPass').value = '';
+          document.getElementById('ownConfirmPass').value = '';
+          Swal.fire({ icon: 'success', title: 'Berhasil', text: res.message, confirmButtonColor: '#07192f' });
+        } else {
+          Swal.fire({ icon: 'error', title: 'Gagal', text: res.message, confirmButtonColor: '#07192f' });
+        }
+      } catch (err) { hideLoader(); Swal.fire('Gagal', err.message, 'error'); }
+    }
+
+    // =========================================================================
+    // 10. FLOATING CHAT SUPER CEPAT (CENTANG 1 ABU / 2 ABU ONLINE / 2 BIRU + DETAIL)
+    // =========================================================================
+    function initChatEngine() {
+      document.getElementById('chatFab').style.display = 'flex';
+      pollChat();
+      if (chatTimer) clearInterval(chatTimer);
+      chatTimer = setInterval(pollChat, 6000);
+    }
+
+    function toggleChatPanel() {
+      chatOpen = !chatOpen;
+      document.getElementById('chatPanel').classList.toggle('open', chatOpen);
+      document.getElementById('chatFab').style.display = chatOpen ? 'none' : 'flex';
+      if (chatOpen) pollChat();
+    }
+
+    function switchChatListTab(tab) {
+      chatListTab = tab;
+      document.getElementById('chatTabNormal').className = tab === 'normal' ? 'py-1.5 rounded-lg bg-white text-slate-900 shadow-sm' : 'py-1.5 rounded-lg text-slate-600';
+      document.getElementById('chatTabMonitor').className = tab === 'monitor' ? 'py-1.5 rounded-lg bg-amber-400 text-slate-950 shadow-sm' : 'py-1.5 rounded-lg text-amber-800 hover:bg-amber-50';
+      renderChatContacts();
+    }
+
+    async function pollChat() {
+      if (!currentUser || chatFetching || chatSending) return;
+      chatFetching = true;
+      try {
+        const res = await callCore('syncChat', currentUser.username, chatActiveTarget, chatIsMonitor);
+        applyChatSync(res);
+      } catch (e) {
+      } finally {
+        chatFetching = false;
+      }
+    }
+
+    function applyChatSync(res) {
+      if (!res) return;
+      chatState = res;
+      const badge = document.getElementById('chatBadgeGlobal');
+      if (res.unreadTotal > 0) {
+        badge.textContent = res.unreadTotal;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+
+      if (!chatActiveTarget) {
+        renderChatContacts();
+      } else if (res.activeTarget === chatActiveTarget) {
+        // Update status online partner di header
+        if (!chatIsMonitor) {
+          const p = (res.users || []).find(u => u.username === chatActiveTarget);
+          if (p) {
+            document.getElementById('chatHeaderSub').innerHTML = p.online
+              ? '<span class="text-emerald-300">● Online</span>'
+              : '<span class="text-slate-300">○ Offline</span>';
+          }
+        }
+        renderChatMessages(res.messages || []);
+      }
+    }
+
+    function renderChatContacts() {
+      const box = document.getElementById('chatContactsView');
+      if (chatListTab === 'monitor' && isSuperAdmin()) {
+        const threads = chatState.monitorThreads || [];
+        if (!threads.length) {
+          box.innerHTML = '<div class="p-8 text-center text-xs text-slate-400">Belum ada percakapan antar user lain.</div>';
+          return;
+        }
+        box.innerHTML = threads.map(t => `
+          <div onclick="openChatRoom('${esc(t.threadId)}', '${esc(t.label)}', true)"
+            class="p-3.5 bg-amber-50/60 hover:bg-amber-100/70 cursor-pointer flex items-center justify-between gap-3 transition">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-10 h-10 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center shrink-0"><i class="bi bi-incognito"></i></div>
+              <div class="min-w-0">
+                <p class="text-xs font-extrabold text-slate-900 truncate">${esc(t.label)}</p>
+                <p class="text-[10px] text-slate-500">${t.count} pesan • ${esc(t.lastTime)}</p>
+              </div>
+            </div>
+            <i class="bi bi-chevron-right text-slate-400 text-xs"></i>
+          </div>
+        `).join('');
+        return;
+      }
+
+      const users = chatState.users || [];
+      if (!users.length) {
+        box.innerHTML = '<div class="p-8 text-center text-xs text-slate-400">Belum ada user lain yang aktif.</div>';
+        return;
+      }
+      box.innerHTML = users.map(u => {
+        const unread = (chatState.unreadPerUser && chatState.unreadPerUser[u.username]) || 0;
+        return `
+          <div onclick="openChatRoom('${esc(u.username)}', '${esc(u.nama)}', false)"
+            class="p-3.5 bg-white hover:bg-blue-50/70 cursor-pointer flex items-center justify-between gap-3 transition">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="relative shrink-0">
+                <div class="w-10 h-10 rounded-full ministry-gradient text-amber-300 font-extrabold text-xs flex items-center justify-center">${getInitials(u.nama)}</div>
+                <span class="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${u.online ? 'bg-emerald-500' : 'bg-slate-400'}"></span>
+              </div>
+              <div class="min-w-0">
+                <p class="text-xs font-extrabold text-slate-900 truncate">${esc(u.nama)}</p>
+                <p class="text-[11px] font-semibold ${u.online ? 'text-emerald-600' : 'text-slate-400'}">${u.online ? 'Online' : 'Offline'} • ${esc(u.role)}</p>
+              </div>
+            </div>
+            ${unread > 0 ? `<span class="min-w-[22px] h-[22px] px-1.5 rounded-full bg-rose-600 text-white text-[11px] font-extrabold flex items-center justify-center">${unread}</span>` : ''}
+          </div>`;
+      }).join('');
+    }
+
+    function openChatRoom(target, title, isMonitor) {
+      chatActiveTarget = target;
+      chatIsMonitor = Boolean(isMonitor);
+      chatLastRenderHash = '';
+
+      document.getElementById('chatContactsView').classList.add('hidden');
+      document.getElementById('chatSuperTabs').classList.add('hidden');
+      document.getElementById('chatRoomView').classList.remove('hidden');
+      document.getElementById('chatBackBtn').classList.remove('hidden');
+      document.getElementById('chatHeaderTitle').textContent = title;
+      document.getElementById('chatHeaderSub').textContent = isMonitor ? 'Pantauan Siluman (Read-Only)' : 'Memuat status...';
+      document.getElementById('chatClearBtn').classList.toggle('hidden', isMonitor);
+      document.getElementById('chatMonitorNotice').classList.toggle('hidden', !isMonitor);
+      document.getElementById('chatInputBar').classList.toggle('hidden', isMonitor);
+      document.getElementById('chatMessagesBody').innerHTML = '<div class="text-center py-8 text-xs text-slate-400">Memuat obrolan...</div>';
+
+      pollChat();
+    }
+
+    function backToChatContacts() {
+      chatActiveTarget = '';
+      chatIsMonitor = false;
+      chatLastRenderHash = '';
+
+      document.getElementById('chatRoomView').classList.add('hidden');
+      document.getElementById('chatContactsView').classList.remove('hidden');
+      document.getElementById('chatBackBtn').classList.add('hidden');
+      document.getElementById('chatClearBtn').classList.add('hidden');
+      if (isSuperAdmin()) document.getElementById('chatSuperTabs').classList.remove('hidden');
+      document.getElementById('chatHeaderTitle').textContent = 'Pesan Internal BMN';
+      document.getElementById('chatHeaderSub').textContent = 'Komunikasi cepat antar pegawai';
+      renderChatContacts();
+      pollChat();
+    }
+
+    function renderChatMessages(msgs) {
+      const hash = JSON.stringify(msgs);
+      if (hash === chatLastRenderHash) return;
+      chatLastRenderHash = hash;
+
+      const body = document.getElementById('chatMessagesBody');
+      const atBottom = body.scrollHeight - body.scrollTop <= body.clientHeight + 90;
+
+      if (!msgs.length) {
+        body.innerHTML = '<div class="text-center py-8 text-[11px] text-slate-500">Belum ada pesan. Mulai obrolan aman di sini.</div>';
+        return;
+      }
+
+      const myUname = currentUser.username.toLowerCase();
+      body.innerHTML = msgs.map((m, idx) => {
+        const isMe = !chatIsMonitor && m.from === myUname;
+        const timeShort = m.sentAt ? m.sentAt.split(' ')[1]?.slice(0, 5) || m.sentAt : '';
+
+        // Ikon Status Centang
+        let tickHtml = '';
+        if (isMe || chatIsMonitor) {
+          if (m.status === 'sending') {
+            tickHtml = '<i class="bi bi-clock text-slate-400" title="Mengirim..."></i>';
+          } else if (m.status === 'read') {
+            tickHtml = '<i class="bi bi-check2-all text-sky-500 text-sm font-bold" title="Dibaca"></i>';
+          } else if (m.status === 'delivered') {
+            tickHtml = '<i class="bi bi-check2-all text-slate-400 text-sm" title="Diterima (Online)"></i>';
+          } else {
+            tickHtml = '<i class="bi bi-check2 text-slate-400 text-sm" title="Terkirim"></i>';
+          }
+        }
+
+        const alignCls = isMe ? 'ml-auto bg-blue-950 text-white rounded-2xl rounded-tr-sm' : 'mr-auto bg-white text-slate-800 border border-slate-200 rounded-2xl rounded-tl-sm';
+        const delCls = m.deleted ? 'opacity-70 italic' : '';
+
+        return `
+          <div class="max-w-[85%] ${alignCls} ${delCls} px-3.5 py-2.5 shadow-sm group relative">
+            ${(!isMe || chatIsMonitor) ? `<p class="text-[10px] font-extrabold text-amber-600 mb-0.5">${esc(m.fromName)}</p>` : ''}
+            <p class="text-xs leading-relaxed break-words whitespace-pre-wrap">${esc(m.text)}</p>
+            <div class="mt-1.5 flex items-center justify-end gap-1.5 text-[10px] ${isMe ? 'text-slate-300' : 'text-slate-400'}">
+              ${m.edited && !m.deleted ? '<span>(diedit)</span>' : ''}
+              <span>${esc(timeShort)}</span>
+              ${tickHtml}
+              <button onclick="showMessageDetail(${idx})" class="hover:text-amber-400 ml-0.5" title="Detail Terkirim / Diterima / Dibaca">
+                <i class="bi bi-info-circle"></i>
+              </button>
+              ${isMe && !m.deleted ? `
+                <button onclick="handleEditChat('${esc(m.id)}', ${idx})" class="hover:text-amber-400" title="Edit"><i class="bi bi-pencil"></i></button>
+                <button onclick="handleDeleteChat('${esc(m.id)}')" class="hover:text-rose-400" title="Tarik Pesan"><i class="bi bi-trash"></i></button>
+              ` : ''}
+            </div>
+          </div>`;
+      }).join('');
+
+      window.__renderedChatMsgs = msgs;
+      if (atBottom) body.scrollTop = body.scrollHeight;
+    }
+
+    function showMessageDetail(idx) {
+      const m = (window.__renderedChatMsgs || [])[idx];
+      if (!m) return;
+      Swal.fire({
+        title: 'Info Detail Pesan',
+        html: `
+          <div class="text-left text-xs space-y-2.5 pt-2">
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <p class="text-slate-500">Pengirim:</p>
+              <p class="font-bold text-slate-900">${esc(m.fromName)}</p>
+            </div>
+            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border">
+              <span><i class="bi bi-check2 text-slate-500 mr-1.5"></i><b>Terkirim</b></span>
+              <span class="font-mono-tech text-slate-700">${esc(m.sentAt || '-')}</span>
+            </div>
+            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border">
+              <span><i class="bi bi-check2-all text-slate-500 mr-1.5"></i><b>Diterima</b></span>
+              <span class="font-mono-tech text-slate-700">${esc(m.deliveredAt || 'Menunggu penerima online')}</span>
+            </div>
+            <div class="flex items-center justify-between p-2.5 rounded-xl bg-sky-50 border border-sky-200">
+              <span><i class="bi bi-check2-all text-sky-600 mr-1.5"></i><b>Dibaca</b></span>
+              <span class="font-mono-tech text-sky-900 font-bold">${esc(m.readAt || 'Belum dibaca')}</span>
+            </div>
+          </div>
+        `,
+        confirmButtonColor: '#07192f',
+        confirmButtonText: 'Tutup'
+      });
+    }
+
+    async function handleSendChat() {
+      const inp = document.getElementById('chatInput');
+      const txt = inp.value.trim();
+      if (!txt || !chatActiveTarget || chatIsMonitor || chatSending) return;
+
+      inp.value = '';
+      chatSending = true;
+
+      // Optimistic UI instan (0ms)
+      const nowStr = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+      const optimistic = (chatState.messages || []).concat([{
+        id: 'TMP-' + Date.now(),
+        from: currentUser.username.toLowerCase(),
+        fromName: currentUser.nama,
+        text: txt,
+        sentAt: 'Hari ini ' + nowStr,
+        deliveredAt: '',
+        readAt: '',
+        status: 'sending'
+      }]);
+      renderChatMessages(optimistic);
+
+      try {
+        const res = await callCore('sendChatMessage', currentUser.username, chatActiveTarget, txt);
+        chatSending = false;
+        applyChatSync(res);
+      } catch (err) {
+        chatSending = false;
+        toast('Gagal mengirim pesan: ' + err.message, 'error');
+        pollChat();
+      }
+    }
+
+    async function handleEditChat(msgId, idx) {
+      const m = (window.__renderedChatMsgs || [])[idx];
+      if (!m) return;
+      const ans = await Swal.fire({
+        title: 'Edit Pesan',
+        input: 'textarea',
+        inputValue: m.rawText,
+        showCancelButton: true,
+        confirmButtonColor: '#07192f',
+        confirmButtonText: 'Simpan'
+      });
+      if (!ans.isConfirmed || !ans.value.trim()) return;
+      chatSending = true;
+      try {
+        const res = await callCore('editChatMessage', currentUser.username, chatActiveTarget, msgId, ans.value.trim());
+        chatSending = false;
+        applyChatSync(res);
+      } catch (err) { chatSending = false; toast(err.message, 'error'); }
+    }
+
+    async function handleDeleteChat(msgId) {
+      const ans = await Swal.fire({
+        title: 'Tarik pesan ini?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        confirmButtonText: 'Ya, Tarik'
+      });
+      if (!ans.isConfirmed) return;
+      chatSending = true;
+      try {
+        const res = await callCore('deleteChatMessage', currentUser.username, chatActiveTarget, msgId);
+        chatSending = false;
+        applyChatSync(res);
+      } catch (err) { chatSending = false; toast(err.message, 'error'); }
+    }
+
+    async function confirmClearChat() {
+      const ans = await Swal.fire({
+        title: 'Bersihkan obrolan ini?',
+        text: 'Riwayat obrolan ini akan dibersihkan dari layar Anda.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        confirmButtonText: 'Ya, Bersihkan'
+      });
+      if (!ans.isConfirmed) return;
+      chatSending = true;
+      try {
+        const res = await callCore('clearChatThread', currentUser.username, chatActiveTarget);
+        chatSending = false;
+        applyChatSync(res);
+        toast('Obrolan dibersihkan.');
+      } catch (err) { chatSending = false; toast(err.message, 'error'); }
+    }
+
+    // =========================================================================
+    // 11. INISIALISASI HALAMAN & EVENT LISTENER
+    // =========================================================================
+    window.addEventListener('message', (evt) => {
+      if (evt.data && evt.data.type === 'BMN_PORTAL_ACTIVITY') touchActivity();
+      if (evt.data && evt.data.type === 'BMN_MODULE_READY') hideLoader();
+    });
+
+    ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart'].forEach(ev => {
+      window.addEventListener(ev, touchActivity, { passive: true });
+    });
+
+    window.addEventListener('popstate', () => {
+      if (currentUser) resolveInitialRoute();
+    });
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      startDigitalClock();
+      try {
+        const raw = localStorage.getItem(SESSION_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          const elapsed = Date.now() - Number(parsed.lastActivity || 0);
+          if (parsed.user && elapsed < IDLE_LIMIT_MS) {
+            showLoader('Memulihkan Sesi BMN UNIMA...');
+            const boot = await callCore('getSessionBootstrap', parsed.user.username);
+            currentUser = boot.user;
+            appSettings = boot.settings || appSettings;
+            saveSession();
+            hideLoader();
+            enterApp();
+            return;
+          } else {
+            localStorage.removeItem(SESSION_KEY);
+          }
+        }
+      } catch (e) {
+        localStorage.removeItem(SESSION_KEY);
+        hideLoader();
+      }
+      updateUrlAndTitle('/login', 'Login | BMN UNIMA', true);
+    });
+  </script>
+</body>
+</html>
