@@ -845,6 +845,7 @@
   }
 
   function updateBrowserTabAndUrl(menuKey, push = true) {
+    if (window.self !== window.top) return; // Jangan ubah URL jika dibuka di dalam iframe Portal BMN UNIMA
     const route = MENU_ROUTES[menuKey] || MENU_ROUTES['dashboard'];
     document.title = route.title;
     if (push && window.location.pathname !== route.path) {
