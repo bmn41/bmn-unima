@@ -363,6 +363,7 @@
                 <span id="dashClockGmt" class="font-mono-tech text-amber-300 shrink-0">GMT+8</span>
               </div>
             </div>
+          </div>
 
           <!-- Kartu Modul Aplikasi -->
           <div>
@@ -2275,7 +2276,7 @@
             <div class="flex items-center gap-3 min-w-0">
               <div class="relative shrink-0">
                 ${u.fotoUrl
-                  ? `<img src="${esc(u.fotoUrl)}" onclick="event.stopPropagation(); openPhotoLightbox('${esc(u.fotoHdUrl)}','${esc(u.fotoFileId)}','${esc(u.nama)}','${esc(u.role)}')"
+                  ? `<img src="${esc(u.fotoUrl)}" onclick="event.stopPropagation(); openPhotoLightbox('${esc(u.fotoHdUrl)}','${esc(u.fotoFileId)}','${esc(u.nama)}','')"
                        title="Lihat Foto HD"
                        class="w-10 h-10 rounded-full object-cover border border-amber-400 cursor-zoom-in" />`
                   : `<div class="w-10 h-10 rounded-full ministry-gradient text-amber-300 font-extrabold text-xs flex items-center justify-center">${getInitials(u.nama)}</div>`
@@ -2284,7 +2285,7 @@
               </div>
               <div class="min-w-0">
                 <p class="text-xs font-extrabold text-slate-900 truncate">${esc(u.nama)}</p>
-                <p class="text-[11px] font-semibold ${u.online ? 'text-emerald-600' : 'text-slate-400'}">${u.online ? 'Online' : 'Offline'} • ${esc(u.role)}</p>
+                <p class="text-[11px] font-semibold ${u.online ? 'text-emerald-600' : 'text-slate-400'}">${u.online ? 'Online' : 'Offline'}</p>
               </div>
             </div>
             ${unread > 0 ? `<span class="min-w-[22px] h-[22px] px-1.5 rounded-full bg-rose-600 text-white text-[11px] font-extrabold flex items-center justify-center">${unread}</span>` : ''}
