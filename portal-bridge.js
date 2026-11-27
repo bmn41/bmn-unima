@@ -33,20 +33,21 @@
     if (MODULE === 'bast' && urlStr === '/api') {
       return origFetch(BAST_EXEC, Object.assign({}, init, { redirect: 'follow' }));
     }
-    if (MODULE === 'dbr' && urlStr.includes('script.google.com/macros/') && init && typeof init.body === 'string') {
-      try {
-        const parsedBody = JSON.parse(init.body);
-        if (Array.isArray(parsedBody.args) && parsedBody.args.length > 0) {
-          const lastIdx = parsedBody.args.length - 1;
-          if (typeof parsedBody.args[lastIdx] === 'string' && parsedBody.args[lastIdx].toLowerCase() === portalUser.username.toLowerCase()) {
-            parsedBody.args[lastIdx] = 'admin';
-            init = Object.assign({}, init, { body: JSON.stringify(parsedBody) });
+    if (MODULE === 'dbr' && urlStr.includes('script.google.com/macros/')) {
+      if (init && typeof init.body === 'string') {
+        try {
+          const parsedBody = JSON.parse(init.body);
+          if (Array.isArray(parsedBody.args) && parsedBody.args.length > 0) {
+            const lastIdx = parsedBody.args.length - 1;
+            if (typeof parsedBody.args[lastIdx] === 'string' && parsedBody.args[lastIdx].toLowerCase() === portalUser.username.toLowerCase()) {
+              parsedBody.args[lastIdx] = 'eric';
+              init = Object.assign({}, init, { body: JSON.stringify(parsedBody) });
+            }
           }
-        }
-      } catch (e) {}
+        } catch (e) {}
+        return origFetch('/api?module=dbr', Object.assign({}, init, { redirect: 'follow' }));
+      }
     }
-    return origFetch(input, init);
-  };
 
   // 2. Sembunyikan elemen ganda (Login, Sidebar/Header lama, Chat lama) + enforce tombol sesuai hak akses
   const cssRules = [
@@ -112,7 +113,7 @@
   } else if (MODULE === 'dbr') {
     const dbrUser = {
       id: portalUser.id,
-      username: 'admin', // Menggunakan service account aktif pada DB DBR agar tidak mengubah tabel Users DBR
+      username: 'eric',
       nama: portalUser.nama,
       nip: portalUser.nip || '-',
       role: dbrRole,
