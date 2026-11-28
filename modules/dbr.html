@@ -1398,7 +1398,7 @@
       return isNaN(ms) ? 0 : ms;
     }
 
-    function applyServerData(data) {
+    function applyServerData(data, isFromServer = true) {
       if (!data) return;
       if (data.user) {
         currentUser = data.user;
@@ -1419,8 +1419,8 @@
         logs: data.logs !== undefined ? data.logs : (appState.logs || [])
       };
       if (isFromServer) {
-     try { localStorage.setItem(DATA_CACHE_KEY, JSON.stringify(appState)); } catch (e) {}
-   }
+        try { localStorage.setItem(DATA_CACHE_KEY, JSON.stringify(appState)); } catch (e) {}
+      }
 
       document.getElementById('statTotalGedung').textContent = appState.gedung.length;
       document.getElementById('statTotalLantai').textContent = appState.lantai.length;
@@ -1864,7 +1864,7 @@
         room.Pembuat_NIP = currentUser.nip;
         room.Updated_At = nowStr;
         room.Aktivitas_DBR = 'Perubahan Penanggungjawab';
-        applyServerData(appState);
+        applyServerData(appState, false);
 
         // Panggil fungsi super cepat updatePjRuangan di Code.gs
         google.script.run
@@ -1972,7 +1972,7 @@
         if (res.isConfirmed) {
           // Optimistic instant removal
           appState.usulan = appState.usulan.filter(function(u) { return u.ID_Usulan !== idUsulan; });
-          applyServerData(appState);
+          applyServerData(appState, false);
 
           showLoading('Membatalkan pengajuan...');
           google.script.run
@@ -2359,7 +2359,7 @@
           Created_At: nowStr
         });
       }
-      applyServerData(appState);
+      applyServerData(appState, false);
 
       google.script.run
         .withSuccessHandler(function(d) {
@@ -2424,7 +2424,7 @@
           Created_At: nowStr
         });
       }
-      applyServerData(appState);
+      applyServerData(appState, false);
 
       google.script.run
         .withSuccessHandler(function(d) {
@@ -2503,7 +2503,7 @@
           Created_At: nowStr
         });
       }
-      applyServerData(appState);
+      applyServerData(appState, false);
 
       google.script.run
         .withSuccessHandler(function(d) {
@@ -2590,7 +2590,7 @@
           Kode_UPB: kodeUpb
         });
       }
-      applyServerData(appState);
+      applyServerData(appState, false);
 
       google.script.run
         .withSuccessHandler(function(d) {
@@ -2694,7 +2694,7 @@
             appState.kelompok = appState.kelompok.filter(function(k) { return k.ID_Gedung !== realTargetId; });
             appState.ruangan = appState.ruangan.filter(function(r) { return r.ID_Gedung !== realTargetId; });
           }
-          applyServerData(appState);
+          applyServerData(appState, false);
         }
 
         showLoading('Memproses...');
@@ -3279,7 +3279,7 @@
           r.Aktivitas_DBR = 'Update Data Barang DBR';
         }
       });
-      applyServerData(appState);
+      applyServerData(appState, false);
 
       showLoading('Menyimpan DBR...');
       google.script.run
