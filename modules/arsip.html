@@ -1347,10 +1347,22 @@ function parseDateSafe(val) {
   const t = new Date(s).getTime();
   return isNaN(t) ? 0 : t;
 }
+const IS_IN_PORTAL = (window.self !== window.top);
 let currentUserRole = "";
 let currentUserPerms = { menus:[], actions:[] };
 let appRoles = {}; 
 let manualSpinnerActive = false;
+
+// Jika dibuka di dalam Portal BMN UNIMA, langsung baca sesi SSO dari portal-bridge.js tanpa menunggu getAppConfig()
+if (IS_IN_PORTAL) {
+  try {
+    const portalInjected = JSON.parse(localStorage.getItem("currentUser") || "null");
+    if (portalInjected && portalInjected.name) {
+      currentUserRole = portalInjected.role || "OPERATOR";
+      currentUserPerms = portalInjected.permissions || { menus: ["ALL"], actions: [] };
+    }
+  } catch (e) {}
+}
 
 // FUNGSI PENGIRIM LOG KE SERVER
 function logKeServer(aksi, detail) {
@@ -1427,17 +1439,32 @@ function hideGlobalSpinner(){
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  // MODE PORTAL: langsung buka tampilan aplikasi & hormati hak akses dari Portal BMN UNIMA
+  if (IS_IN_PORTAL) {
+    let user = null;
+    try { user = JSON.parse(localStorage.getItem("currentUser") || "null"); } catch (e) {}
+    if (user && user.name) {
+      currentUserRole = user.role || "OPERATOR";
+      currentUserPerms = user.permissions || { menus: ["ALL"], actions: [] };
+      document.body.className = user.theme || "theme-kementerian";
+      document.getElementById("loginPage").style.display = "none";
+      document.getElementById("appPage").style.display = "block";
+      document.getElementById("welcomeMsg").innerText = `${user.name}`;
+      applyPermissionsToDashboard();
+      loadDashboard();
+      updateSubMenuOptions();
+      return; // Jangan jalankan getUserLatestPermissions / backToDashboard milik versi standalone
+    }
+  }
+
   showGlobalSpinner("Memuat Sistem...");
 
   google.script.run
     .withSuccessHandler(config => {
       hideGlobalSpinner();
 
-      // 1. SIMPAN TEMA ADMIN SEBAGAI TEMA GLOBAL/LOGIN
       globalAdminTheme = config.theme || "theme-default";
       appRoles = config.roles || {};
-      
-      // 2. SET BODY KE TEMA ADMIN DULU (Untuk berjaga-jaga jika di Login Card)
       document.body.className = globalAdminTheme;
       
       let user = null;
@@ -1448,7 +1475,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (userData && lastActivity) {
         if (Date.now() - parseInt(lastActivity, 10) < SESSION_TIMEOUT) {
           isSessionValid = true;
-          localStorage.setItem("lastActivity", Date.now()); // Reset timer
+          localStorage.setItem("lastActivity", Date.now());
         } else {
           localStorage.removeItem("currentUser");
           localStorage.removeItem("lastActivity");
@@ -1458,12 +1485,10 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         if (isSessionValid) user = JSON.parse(userData);
       } catch(e) {
-        console.error("LocalStorage rusak, dihapus:", e);
         localStorage.removeItem("currentUser");
       }
 
       if(user && user.name){
-        // JIKA SUDAH LOGIN SEBELUMNYA
         currentUserRole = user.role;
         currentUserPerms = user.permissions || {menus:[], actions:[]};
         document.getElementById("loginPage").style.display = "none";
@@ -1471,7 +1496,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("welcomeMsg").innerText = `${user.name}`;
         
         applyPermissionsToDashboard(); 
-        applyUserPersonalTheme(user.theme, user.role); // <-- Membaca tema dari sesi
+        applyUserPersonalTheme(user.theme, user.role);
         
         const initialMenu = getMenuKeyFromHash();
         if (initialMenu && initialMenu !== "dashboard" && initialMenu !== "login") {
@@ -1482,7 +1507,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         loadDashboard();
         initChatSystem();
-         // Sinkronisasi otomatis jika Admin baru mengubah hak akses Role / User ini
+
         if (user.username) {
           google.script.run.withSuccessHandler(fresh => {
             if (fresh && fresh.success) {
@@ -1498,7 +1523,6 @@ document.addEventListener("DOMContentLoaded", () => {
           }).getUserLatestPermissions(user.username);
         }
       } else {
-        // JIKA BELUM LOGIN: Tampilkan Login Card (Sudah otomatis pakai tema Admin dari step 2)
         document.getElementById("loginPage").style.display = "block";
         document.getElementById("appPage").style.display = "none";
         updateTabAndUrl("login");
@@ -1514,7 +1538,6 @@ document.addEventListener("DOMContentLoaded", () => {
   
   updateSubMenuOptions();
 });
-
 // JAM DIGITAL (KODE ASLI ANDA)
 function updateClock(){
   const now = new Date();
@@ -1722,24 +1745,25 @@ setInterval(() => {
 
 // MENU
 function loadMenu(menu){
-  const adminOnlyMenus = ["user", "log", "tercetak"];
-  if (adminOnlyMenus.includes(menu) && currentUserRole !== "ADMIN") {
-    showToast("Akses Ditolak! Menu ini hanya untuk Administrator.", "error");
-    return;
-  }
+  // Jika diakses mandiri (di luar Portal), jalankan validasi izin bawaan Arsip
+  if (!IS_IN_PORTAL) {
+    const adminOnlyMenus = ["user", "log", "tercetak"];
+    if (adminOnlyMenus.includes(menu) && currentUserRole !== "ADMIN") {
+      showToast("Akses Ditolak! Menu ini hanya untuk Administrator.", "error");
+      return;
+    }
 
-  // Cegah akses menu yang tidak diizinkan (termasuk lewat URL langsung)
-  if (
-    currentUserRole !== "ADMIN" &&
-    menu !== "setting" &&
-    !currentUserPerms.menus.includes("ALL") &&
-    !currentUserPerms.menus.includes(menu)
-  ) {
-    showToast("Anda tidak memiliki izin untuk membuka menu ini.", "error");
-    backToDashboard();
-    return;
+    if (
+      currentUserRole !== "ADMIN" &&
+      menu !== "setting" &&
+      !currentUserPerms.menus.includes("ALL") &&
+      !currentUserPerms.menus.includes(menu)
+    ) {
+      showToast("Anda tidak memiliki izin untuk membuka menu ini.", "error");
+      backToDashboard();
+      return;
+    }
   }
-
   const myToken = ++menuLoadToken;
   currentActiveMenu = menu;
   updateTabAndUrl(menu);
