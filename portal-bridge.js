@@ -104,11 +104,14 @@
       hak: 'FULL'
     }));
   } else if (MODULE === 'arsip') {
+    const arsipActions = isSuper
+      ? ['upload', 'edit', 'delete', 'download', 'cetak']
+      : actions.concat(hasAction('print') ? ['cetak'] : []);
     localStorage.setItem('currentUser', JSON.stringify({
       username: portalUser.username,
       name: portalUser.nama,
       role: isSuper ? 'ADMIN' : 'OPERATOR',
-      permissions: { menus: ['ALL'], actions: isSuper ? ['upload', 'edit', 'delete', 'download', 'cetak'] : actions },
+      permissions: { menus: ['ALL'], actions: arsipActions },
       theme: 'theme-kementerian'
     }));
     localStorage.setItem('lastActivity', String(Date.now()));
